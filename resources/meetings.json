@@ -1,0 +1,39 @@
+
+[{
+        "meeting": {
+
+            "name": "Daily",
+            "duration": "15",
+            "timesInWeek": "5"
+        }
+    },
+    {
+        "meeting": {
+            "name": "Retrospective",
+            "duration": "60",
+            "timesInWeek": "1"
+        }
+    },
+    {
+        "meeting": {
+            "name": "Planning",
+            "duration": "75",
+            "timesInWeek": "1"
+        }
+    },
+    {
+        "meeting": {
+            "name": "Refinement",
+            "duration": "60",
+            "timesInWeek": "1"
+        }
+    },
+    {
+        "meeting": {
+            "name": "Dev planning",
+            "duration": "60",
+            "timesInWeek": "1"
+        }
+    }
+]
+

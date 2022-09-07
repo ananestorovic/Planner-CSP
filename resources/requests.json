@@ -1,0 +1,57 @@
+[{
+  "request": 
+    {
+     "id": "1",
+     "team": "TeamA",
+     "dayOff": "Monday",
+     "startTimeOff": "09:00",
+     "endTimeOff": "17:00"
+    }
+    },
+    {"request": 
+    {
+     "id": "2",
+     "team": "TeamA",
+     "dayOff": "Friday",
+     "startTimeOff": "15:30",
+     "endTimeOff": "17:00"
+    }
+    },
+    {"request": 
+   {
+     "id": "3",
+     "team": "TeamA",
+     "dayOff": "Tuesday",
+     "startTimeOff": "09:00",
+     "endTimeOff": "14:00"
+   }
+    },
+    {"request": 
+    {
+     "id": "4",
+     "team": "TeamB",
+     "dayOff": "Monday",
+     "startTimeOff": "09:00",
+     "endTimeOff": "12:00"
+    }
+    },
+    {"request": 
+    {
+     "id": "4",
+     "team": "TeamB",
+     "dayOff": "Tuesday",
+     "startTimeOff": "10:00",
+     "endTimeOff": "15:00"
+    }
+    },
+    {"request": 
+    {
+     "id": "5",
+     "team": "TeamC",
+     "dayOff": "Tuesday",
+     "startTimeOff": "09:00",
+     "endTimeOff": "17:00"
+    }
+    }
+   ]
+
