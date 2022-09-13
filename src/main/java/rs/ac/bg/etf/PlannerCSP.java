@@ -14,12 +14,30 @@ public class PlannerCSP {
         FileParser fp = new FileParser();
 
         fp.parseMeetingsFile("resources/meetings.json");
-        fp.parseTeamsFile("resources/teams.json");  
-        fp.parseRequestsFile("resources/requests.json");  
+        fp.parseTeamsFile("resources/teams.json");
+        fp.parseRequestsFile("resources/requests.json");
+        fp.generateTeamConstraint();
 
-        for (int i = 0; i < fp.getInfoAboutMeetings().size(); i++) {
-            System.out.println(fp.getInfoAboutMeetings().get(i));
+//        for (int i = 0; i < fp.getInfoAboutMeetings().size(); i++) {
+//            System.out.println(fp.getInfoAboutMeetings().get(i));
+//        }
+//
+        for (String name : fp.getTeams().keySet()) {
+            String key = name.toString();
+            String value = fp.getTeams().get(name).toString();
+            System.out.println(key + " " + value);
+
         }
+//
+//        for (String name : fp.getTeamConstraint().keySet()) {
+//            String key = name.toString();
+//            String value = fp.getTeamConstraint().get(name).toString();
+//            System.out.println(key + " " + value);
+//
+//        }
+//        
+
+        fp.sortUnavailable(fp.getTeams());
 
         for (String name : fp.getTeams().keySet()) {
             String key = name.toString();
@@ -27,6 +45,7 @@ public class PlannerCSP {
             System.out.println(key + " " + value);
 
         }
+//
 
     }
 }

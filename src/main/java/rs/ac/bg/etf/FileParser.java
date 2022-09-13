@@ -9,6 +9,8 @@ import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,25 +28,35 @@ import org.json.simple.parser.ParseException;
  */
 public class FileParser {
 
-  
-    HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> teams = new HashMap<>(Map.of());
-    List<Triplet<String, Integer, Integer>> infoAboutMeetings = new ArrayList<>();
+    static final int startHours = 9;
+    static final int startMin = 0;
+    static final int endHours = 17;
+    static final int endMin = 0;
 
-    String daysWeek[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+    private final HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> unavailable = new HashMap<>(Map.of());
+    private final HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> available = new HashMap<>(Map.of());
+
+    private final List<Triplet<String, Integer, Integer>> infoAboutMeetings = new ArrayList<>();
+
+    private final String[] daysWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+
+    private final HashMap<String, List<Integer>> employee = new HashMap<>(Map.of());
+
+    private final HashMap<String, List<String>> teamConstraint = new HashMap<>(Map.of());
 
     public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getTeams() {
-        return teams;
+        return unavailable;
     }
 
     public List<Triplet<String, Integer, Integer>> getInfoAboutMeetings() {
         return infoAboutMeetings;
     }
 
-    public String[] getDaysWeek() {
-        return daysWeek;
+    public HashMap<String, List<String>> getTeamConstraint() {
+        return teamConstraint;
     }
-    
 
+    
     @SuppressWarnings("unchecked")
     public void parseTeamsFile(String fileName) {
         //JSON parser object to parse read file
@@ -75,17 +87,21 @@ public class FileParser {
         //Get informations about team
         String name = (String) teamObject.get("name");
 
-        if (!teams.containsKey(team)) {
+        HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>> daysWithHoursOff = new HashMap<>(Map.of());
 
-            HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>> daysWithHoursOff = new HashMap<>(Map.of());
+        HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>> daysWithHoursOn = new HashMap<>(Map.of());
 
-            for (String day : getDaysWeek()) {
-                daysWithHoursOff.put(day, new ArrayList<>());
-            }
-
-            teams.put(name, daysWithHoursOff);
-
+        for (String day : daysWeek) {
+            daysWithHoursOff.put(day, new ArrayList<>());
+            daysWithHoursOn.put(day, new ArrayList<>());
         }
+
+        unavailable.put(name, daysWithHoursOff);
+        available.put(name, daysWithHoursOn);
+
+        employee.put(name, new ArrayList<>());
+
+        teamConstraint.put(name, new ArrayList<>());
 
     }
 
@@ -117,6 +133,7 @@ public class FileParser {
         JSONObject requestObject = (JSONObject) request.get("request");
 
         //Get informations about request
+        String id = (String) requestObject.get("id");
         String team = (String) requestObject.get("team");
         String dayOff = (String) requestObject.get("dayOff");
         String startTimeOff = (String) requestObject.get("startTimeOff");
@@ -128,7 +145,9 @@ public class FileParser {
 
         Quartet<Integer, Integer, Integer, Integer> element = new Quartet<>(Integer.parseInt(startHours), Integer.parseInt(startMinutes), Integer.parseInt(endHours), Integer.parseInt(endMinutes));
 
-        teams.get(team).get(dayOff).add(element);
+        unavailable.get(team).get(dayOff).add(element);
+
+        employee.get(team).add(Integer.parseInt(id));
 
     }
 
@@ -166,6 +185,103 @@ public class FileParser {
 
         infoAboutMeetings.add(new Triplet<String, Integer, Integer>(name, Integer.parseInt(duration), Integer.parseInt(timesInWeek)));
 
+    }
+
+    public void generateTeamConstraint() {
+
+        employee.forEach((k, v) -> {
+
+            employee.forEach((key, val) -> {
+
+                if (!k.equals(key)) {
+                    if (v.stream().anyMatch(element -> val.contains(element))) {
+                        teamConstraint.get(k).add(key);
+                    }
+                }
+
+            });
+
+        });
+
+    }
+
+    public void sortUnavailable(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> table) {
+
+        table.forEach((k, v) -> {
+
+            for (String day : daysWeek) {
+
+                List<Quartet<Integer, Integer, Integer, Integer>> oldList = table.get(k).get(day);
+
+                oldList.sort(new Comparator<Quartet<Integer, Integer, Integer, Integer>>() {
+                    @Override
+                    public int compare(Quartet<Integer, Integer, Integer, Integer> o1, Quartet<Integer, Integer, Integer, Integer> o2) {
+                        if (o1.getValue0() < o2.getValue0()) {
+                            return -1;
+                        } else if (o1.getValue0() > o2.getValue0()) {
+                            return 1;
+                        } else {
+                            if (o1.getValue1() < o2.getValue1()) {
+                                return -1;
+                            } else if (o1.getValue1() > o2.getValue1()) {
+                                return 1;
+                            } else {
+                                if (o1.getValue2() < o2.getValue2()) {
+                                    return -1;
+                                } else if (o1.getValue2() > o2.getValue2()) {
+                                    return 1;
+                                } else {
+                                    if (o1.getValue3() < o2.getValue3()) {
+                                        return -1;
+                                    } else if (o1.getValue3() > o2.getValue3()) {
+                                        return 1;
+                                    } else {
+                                        return 0;
+                                    }
+
+                                }
+                            }
+                        }
+
+                    }
+
+                });
+
+                table.get(k).replace(day, oldList);
+
+            }
+
+        });
+
+    }
+    
+    
+    public void generateAvailable(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> table){ //bilo bi lijepo da ti ovo vraca mapu
+        
+        List<Quartet<Integer, Integer, Integer, Integer>> listOfAvailable = new ArrayList<>();
+        
+        Quartet<Integer, Integer, Integer, Integer> element = new Quartet<>(startHours, startMin, endHours, endMin);
+        
+        listOfAvailable.add(element);
+        
+        table.forEach((k, v) ->{
+            
+            for (String day: daysWeek){
+                
+                List<Quartet<Integer, Integer, Integer, Integer>> listOfUnavailable = table.get(k).get(day);
+                
+                
+                
+                
+                
+                
+                
+                
+                
+            }
+            
+        });
+        
     }
 
 }
