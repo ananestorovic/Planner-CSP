@@ -46,7 +46,6 @@ public class FileParser {
 
     private List<Quartet<Integer, Integer, Integer, Integer>> wholeDay;
 
-
     public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getUnavailable() {
         return unavailable;
     }
@@ -93,15 +92,13 @@ public class FileParser {
 
         }
 
-
     }
 
-    @SuppressWarnings("unchecked")
     public void parseTeamsFile(String fileName) {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -132,7 +129,8 @@ public class FileParser {
 
         for (String day : daysWeek) {
             daysWithHoursOff.put(day, new ArrayList<>());
-            daysWithHoursOn.put(day, wholeDay);
+            //Ana,  Ovo ovde je promenjeno
+            daysWithHoursOn.put(day, new ArrayList<>(wholeDay));
         }
 
         unavailable.put(name, daysWithHoursOff);
@@ -144,12 +142,11 @@ public class FileParser {
 
     }
 
-    @SuppressWarnings("unchecked")
     public void parseRequestsFile(String fileName) {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -190,12 +187,11 @@ public class FileParser {
 
     }
 
-    @SuppressWarnings("unchecked")
     public void parseMeetingsFile(String fileName) {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -294,7 +290,6 @@ public class FileParser {
 
     }
 
-
     public void generateAvailable(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> table) { //bilo bi lijepo da ti ovo vraca mapu
 
         table.forEach((k, v) -> {
@@ -309,52 +304,54 @@ public class FileParser {
                 List<Quartet<Integer, Integer, Integer, Integer>> listOfAvailable = available.get(k).get(day);
                 List<Quartet<Integer, Integer, Integer, Integer>> helper = new ArrayList<>();
 
-
                 for (Quartet<Integer, Integer, Integer, Integer> e1 : listOfUnavailable) {
 
-                    if (flagToPass) break;
+                    if (flagToPass) {
+                        break;
+                    }
 
                     for (Quartet<Integer, Integer, Integer, Integer> e2 : listOfAvailable) {
 
-                        if (flagToPass) break;
+                        if (flagToPass) {
+                            break;
+                        }
 
                         //case when someone requested whole day off
-                        if (e1.getValue0().equals(startHours) && e1.getValue1().equals(startMins) &&
-                                e1.getValue2().equals(endHours) && e1.getValue3().equals(endMins)) {
+                        if (e1.getValue0().equals(startHours) && e1.getValue1().equals(startMins)
+                                && e1.getValue2().equals(endHours) && e1.getValue3().equals(endMins)) {
 
                             List<Quartet<Integer, Integer, Integer, Integer>> emptyList = Collections.<Quartet<Integer, Integer, Integer, Integer>>emptyList();
+                            // Ana, sto ovde radis isto replace, zar se nece dole uraditi?
                             available.get(k).replace(day, emptyList);
                             flagToPass = true;
                             helper = wholeDay;
 
                         } else {
 
-                            if (e2.getValue0() > e1.getValue0() && e2.getValue2() < e1.getValue2())
+                            if (e2.getValue0() > e1.getValue0() && e2.getValue2() < e1.getValue2()) {
                                 helper.add(e2); //between
-                            else if (e2.getValue0().equals(e1.getValue0()) && e2.getValue1().equals(e1.getValue1()))
+                            } else if (e2.getValue0().equals(e1.getValue0()) && e2.getValue1().equals(e1.getValue1())) {
                                 helper.add(e2); //start
-                            else if (e1.getValue2().equals(e2.getValue2()) && e1.getValue3().equals(e2.getValue3()))
+                            } else if (e1.getValue2().equals(e2.getValue2()) && e1.getValue3().equals(e2.getValue3())) {
                                 helper.add(e2); //end
-
+                            }
 
                         }
-
-
-
 
                     }
 
                 }
 
-                listOfAvailable.removeAll(helper);
-                available.get(k).replace(day, listOfAvailable);
+                if (!helper.isEmpty()) {
+                    listOfAvailable.removeAll(helper);
+                    available.get(k).replace(day, listOfAvailable);
+                }
                 //helper.clear();
 
             }
 
+        });
 
-                });
+    }
 
-            }
-
-        }
+}
