@@ -46,14 +46,14 @@ public class PlannerCSP {
 //
 //        }
 
-        fp.generateAvailable(fp.getUnavailable());
+       fp.generateAvailable();
 
-        for (String name : fp.getAvailable().keySet()) {
-            String key = name.toString();
-            String value = fp.getAvailable().get(name).toString();
-            System.out.println(key + " " + value);
-
-        }
+//        for (String name : fp.getAvailable().keySet()) {
+//            String key = name.toString();
+//            String value = fp.getAvailable().get(name).toString();
+//            System.out.println(key + " " + value);
+//
+//        }
 
 //
 
