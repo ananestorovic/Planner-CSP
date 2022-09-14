@@ -4,15 +4,10 @@
  */
 package rs.ac.bg.etf;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Quartet;
@@ -23,28 +18,36 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
- *
  * @author ana
  */
 public class FileParser {
 
+    // work hour: 09:00 - 17:00
     static final int startHours = 9;
-    static final int startMin = 0;
+    static final int startMins = 0;
     static final int endHours = 17;
-    static final int endMin = 0;
 
-    private final HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> unavailable = new HashMap<>(Map.of());
-    private final HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> available = new HashMap<>(Map.of());
+    //limitation: the duration of meetings is equal 30 min * n
+    static final int interval = 30;
 
-    private final List<Triplet<String, Integer, Integer>> infoAboutMeetings = new ArrayList<>();
+    static final int endMins = 0;
 
     private final String[] daysWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
 
-    private final HashMap<String, List<Integer>> employee = new HashMap<>(Map.of());
+    private int sHours, sMins, eHours, eMins;
+    private HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> unavailable;
+    private HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> available;
 
-    private final HashMap<String, List<String>> teamConstraint = new HashMap<>(Map.of());
+    private List<Triplet<String, Integer, Integer>> infoAboutMeetings;
 
-    public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getTeams() {
+    private HashMap<String, List<Integer>> employee;
+
+    private HashMap<String, List<String>> teamConstraint;
+
+    private List<Quartet<Integer, Integer, Integer, Integer>> wholeDay;
+
+
+    public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getUnavailable() {
         return unavailable;
     }
 
@@ -56,13 +59,49 @@ public class FileParser {
         return teamConstraint;
     }
 
-    
+    public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getAvailable() {
+        return available;
+    }
+
+    public FileParser() {
+
+        teamConstraint = new HashMap<>(Map.of());
+        employee = new HashMap<>(Map.of());
+        unavailable = new HashMap<>(Map.of());
+        available = new HashMap<>(Map.of());
+        infoAboutMeetings = new ArrayList<>();
+
+        wholeDay = new ArrayList<>();
+
+        sHours = eHours = startHours;
+        sMins = startMins;
+        eMins += interval;
+
+        while (eHours < endHours) {
+            Quartet<Integer, Integer, Integer, Integer> element = new Quartet<>(sHours, sMins, eHours, eMins);
+            sMins += interval;
+            if (sMins % (2 * interval) == 0) {
+                eHours = ++sHours;
+                sMins = 0;
+                eMins = interval;
+            } else {
+                eHours++;
+                eMins = 0;
+            }
+
+            wholeDay.add(element);
+
+        }
+
+
+    }
+
     @SuppressWarnings("unchecked")
     public void parseTeamsFile(String fileName) {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try ( FileReader reader = new FileReader(fileName)) {
+        try (FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -93,7 +132,7 @@ public class FileParser {
 
         for (String day : daysWeek) {
             daysWithHoursOff.put(day, new ArrayList<>());
-            daysWithHoursOn.put(day, new ArrayList<>());
+            daysWithHoursOn.put(day, wholeDay);
         }
 
         unavailable.put(name, daysWithHoursOff);
@@ -110,7 +149,7 @@ public class FileParser {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try ( FileReader reader = new FileReader(fileName)) {
+        try (FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -156,7 +195,7 @@ public class FileParser {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try ( FileReader reader = new FileReader(fileName)) {
+        try (FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -254,34 +293,68 @@ public class FileParser {
         });
 
     }
-    
-    
-    public void generateAvailable(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> table){ //bilo bi lijepo da ti ovo vraca mapu
-        
-        List<Quartet<Integer, Integer, Integer, Integer>> listOfAvailable = new ArrayList<>();
-        
-        Quartet<Integer, Integer, Integer, Integer> element = new Quartet<>(startHours, startMin, endHours, endMin);
-        
-        listOfAvailable.add(element);
-        
-        table.forEach((k, v) ->{
-            
-            for (String day: daysWeek){
-                
-                List<Quartet<Integer, Integer, Integer, Integer>> listOfUnavailable = table.get(k).get(day);
-                
-                
-                
-                
-                
-                
-                
-                
-                
-            }
-            
-        });
-        
-    }
 
-}
+
+    public void generateAvailable(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> table) { //bilo bi lijepo da ti ovo vraca mapu
+
+        table.forEach((k, v) -> {
+
+            boolean flagToPass = false;
+
+            for (String day : daysWeek) {
+
+                flagToPass = false;
+
+                List<Quartet<Integer, Integer, Integer, Integer>> listOfUnavailable = table.get(k).get(day);
+                List<Quartet<Integer, Integer, Integer, Integer>> listOfAvailable = available.get(k).get(day);
+                List<Quartet<Integer, Integer, Integer, Integer>> helper = new ArrayList<>();
+
+
+                for (Quartet<Integer, Integer, Integer, Integer> e1 : listOfUnavailable) {
+
+                    if (flagToPass) break;
+
+                    for (Quartet<Integer, Integer, Integer, Integer> e2 : listOfAvailable) {
+
+                        if (flagToPass) break;
+
+                        //case when someone requested whole day off
+                        if (e1.getValue0().equals(startHours) && e1.getValue1().equals(startMins) &&
+                                e1.getValue2().equals(endHours) && e1.getValue3().equals(endMins)) {
+
+                            List<Quartet<Integer, Integer, Integer, Integer>> emptyList = Collections.<Quartet<Integer, Integer, Integer, Integer>>emptyList();
+                            available.get(k).replace(day, emptyList);
+                            flagToPass = true;
+                            helper = wholeDay;
+
+                        } else {
+
+                            if (e2.getValue0() > e1.getValue0() && e2.getValue2() < e1.getValue2())
+                                helper.add(e2); //between
+                            else if (e2.getValue0().equals(e1.getValue0()) && e2.getValue1().equals(e1.getValue1()))
+                                helper.add(e2); //start
+                            else if (e1.getValue2().equals(e2.getValue2()) && e1.getValue3().equals(e2.getValue3()))
+                                helper.add(e2); //end
+
+
+                        }
+
+
+
+
+                    }
+
+                }
+
+                listOfAvailable.removeAll(helper);
+                available.get(k).replace(day, listOfAvailable);
+                //helper.clear();
+
+            }
+
+
+                });
+
+            }
+
+        }

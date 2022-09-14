@@ -22,12 +22,12 @@ public class PlannerCSP {
 //            System.out.println(fp.getInfoAboutMeetings().get(i));
 //        }
 //
-        for (String name : fp.getTeams().keySet()) {
-            String key = name.toString();
-            String value = fp.getTeams().get(name).toString();
-            System.out.println(key + " " + value);
-
-        }
+//        for (String name : fp.getUnavailable().keySet()) {
+//            String key = name.toString();
+//            String value = fp.getUnavailable().get(name).toString();
+//            System.out.println(key + " " + value);
+//
+//        }
 //
 //        for (String name : fp.getTeamConstraint().keySet()) {
 //            String key = name.toString();
@@ -37,14 +37,24 @@ public class PlannerCSP {
 //        }
 //        
 
-        fp.sortUnavailable(fp.getTeams());
+        fp.sortUnavailable(fp.getUnavailable());
 
-        for (String name : fp.getTeams().keySet()) {
+//        for (String name : fp.getUnavailable().keySet()) {
+//            String key = name.toString();
+//            String value = fp.getUnavailable().get(name).toString();
+//            System.out.println(key + " " + value);
+//
+//        }
+
+        fp.generateAvailable(fp.getUnavailable());
+
+        for (String name : fp.getAvailable().keySet()) {
             String key = name.toString();
-            String value = fp.getTeams().get(name).toString();
+            String value = fp.getAvailable().get(name).toString();
             System.out.println(key + " " + value);
 
         }
+
 //
 
     }
