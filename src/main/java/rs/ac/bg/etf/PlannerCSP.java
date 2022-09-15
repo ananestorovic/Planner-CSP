@@ -17,6 +17,9 @@ public class PlannerCSP {
         fp.parseTeamsFile("resources/teams.json");
         fp.parseRequestsFile("resources/requests.json");
         fp.generateTeamConstraint();
+        fp.sortUnavailable(fp.getUnavailable());
+        fp.generateAvailable();
+        fp.generateTeamsAndMeetings();
 
 //        for (int i = 0; i < fp.getInfoAboutMeetings().size(); i++) {
 //            System.out.println(fp.getInfoAboutMeetings().get(i));
@@ -37,7 +40,7 @@ public class PlannerCSP {
 //        }
 //        
 
-        fp.sortUnavailable(fp.getUnavailable());
+
 
 //        for (String name : fp.getUnavailable().keySet()) {
 //            String key = name.toString();
@@ -46,7 +49,7 @@ public class PlannerCSP {
 //
 //        }
 
-       fp.generateAvailable();
+
 
 //        for (String name : fp.getAvailable().keySet()) {
 //            String key = name.toString();

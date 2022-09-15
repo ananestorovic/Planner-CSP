@@ -10,8 +10,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.javatuples.Pair;
 import org.javatuples.Quartet;
-import org.javatuples.Triplet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -38,13 +38,15 @@ public class FileParser {
     private HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> unavailable;
     private HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> available;
 
-    private List<Triplet<String, Integer, Integer>> infoAboutMeetings;
+    private List<Pair<String, Integer>> infoAboutMeetings;
 
     private HashMap<String, List<Integer>> employee;
 
     private HashMap<String, List<String>> teamConstraint;
 
     private List<Quartet<Integer, Integer, Integer, Integer>> wholeDay;
+
+    private HashMap<String, List<Pair<String, Boolean>>> teamsAndMeetings;
 
 
     public FileParser() {
@@ -53,7 +55,8 @@ public class FileParser {
         employee = new HashMap<>(Map.of());
         unavailable = new HashMap<>(Map.of());
         available = new HashMap<>(Map.of());
-        infoAboutMeetings = new ArrayList<>();
+        teamsAndMeetings = new HashMap<>(Map.of());
+        infoAboutMeetings = new ArrayList<Pair<String, Integer>>();
 
         wholeDay = new ArrayList<>();
 
@@ -85,7 +88,7 @@ public class FileParser {
         return unavailable;
     }
 
-    public List<Triplet<String, Integer, Integer>> getInfoAboutMeetings() {
+    public List<Pair<String, Integer>> getInfoAboutMeetings() {
         return infoAboutMeetings;
     }
 
@@ -95,6 +98,10 @@ public class FileParser {
 
     public HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> getAvailable() {
         return available;
+    }
+
+    public HashMap<String, List<Pair<String, Boolean>>> getTeamsAndMeetings() {
+        return teamsAndMeetings;
     }
 
     @SuppressWarnings("unchecked")
@@ -141,6 +148,8 @@ public class FileParser {
         available.put(name, daysWithHoursOn);
 
         employee.put(name, new ArrayList<>());
+
+        teamsAndMeetings.put(name, new ArrayList<>());
 
         teamConstraint.put(name, new ArrayList<>());
 
@@ -222,9 +231,8 @@ public class FileParser {
         //Get informations about meeting
         String name = (String) meetingObject.get("name");
         String duration = (String) meetingObject.get("duration");
-        String timesInWeek = (String) meetingObject.get("timesInWeek");
 
-        infoAboutMeetings.add(new Triplet<String, Integer, Integer>(name, Integer.parseInt(duration), Integer.parseInt(timesInWeek)));
+        infoAboutMeetings.add(new Pair<String, Integer>(name, Integer.parseInt(duration)));
 
     }
 
@@ -357,6 +365,16 @@ public class FileParser {
 
         });
 
+    }
+
+    public void generateTeamsAndMeetings(){
+        teamsAndMeetings.forEach((k,v)->{
+            for(Pair<String, Integer> meeting : infoAboutMeetings) {
+                Pair<String, Boolean> m = new Pair<>(meeting.getValue0(), false);
+                teamsAndMeetings.get(k).add(m);
+            }
+
+        });
     }
 
 }
