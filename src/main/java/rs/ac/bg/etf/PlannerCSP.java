@@ -4,6 +4,12 @@
  */
 package rs.ac.bg.etf;
 
+import org.javatuples.Pair;
+
+import java.sql.Time;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author ana
@@ -12,14 +18,22 @@ public class PlannerCSP {
 
     public static void main(String[] args) {
         FileParser fp = new FileParser();
+        CSPAlgorithm csp = new CSPAlgorithm(fp);
 
         fp.parseMeetingsFile("resources/meetings.json");
         fp.parseTeamsFile("resources/teams.json");
         fp.parseRequestsFile("resources/requests.json");
-        fp.generateTeamConstraint();
-        fp.sortUnavailable(fp.getUnavailable());
-        fp.generateAvailable();
-        fp.generateTeamsAndMeetings();
+        fp.generateTeamConstraint(); // just once i need to generate this
+
+        fp.generateAvailable(); //initial table, later we will update this
+        Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution = fp.generateEmptySolution();
+        csp.backtracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+                fp.getAvailable());
+
+        fp.printSolution(solution);
+
+
+
 
 //        for (int i = 0; i < fp.getInfoAboutMeetings().size(); i++) {
 //            System.out.println(fp.getInfoAboutMeetings().get(i));
