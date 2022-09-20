@@ -172,10 +172,9 @@ public class CSPAlgorithm {
     }
 
     public Pair<DayOfWeek, List<TimeInterval>> getContinuousIntervals(Map<DayOfWeek, List<TimeInterval>> domain, int numberOfIntervals) {
-        List<TimeInterval> intervals = new ArrayList<>();
-        Pair<DayOfWeek, List<TimeInterval>> timeAndDay = null;
 
         for (Map.Entry<DayOfWeek, List<TimeInterval>> oneDayEntry : domain.entrySet()) {
+            List<TimeInterval> intervals = new ArrayList<>();
             int n = numberOfIntervals;
             TimeInterval prev = null;
             for (TimeInterval timeInterval : oneDayEntry.getValue()) {
@@ -199,7 +198,7 @@ public class CSPAlgorithm {
                 }
             }
         }
-        return timeAndDay;
+        return null;
     }
 
     private Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> deepCopy(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
@@ -267,19 +266,22 @@ public class CSPAlgorithm {
         return newMap;
     }
 
-    public void removeEveryDayAndTimeInterval(String team, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
+    public void removeEveryDayAndTimeInterval(Set<String> listOfConstrainedTeams, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
                                               Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
-        for (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> entry : domain.entrySet()) {
-            if (entry.getKey().getValue0().equals(team)) {
-                for (Map.Entry<DayOfWeek, List<TimeInterval>> entry1 : entry.getValue().entrySet()) {
-                    if (entry1.getKey().equals(timeAndDay.getValue0())) {
-                        for (TimeInterval timeInterval : timeAndDay.getValue1()) {
-                            entry1.getValue().remove(timeInterval);
+        for(String constrainedTeam: listOfConstrainedTeams){
+            for (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> entry : domain.entrySet()) {
+                if (entry.getKey().getValue0().equals(constrainedTeam)) {
+                    for (Map.Entry<DayOfWeek, List<TimeInterval>> entry1 : entry.getValue().entrySet()) {
+                        if (entry1.getKey().equals(timeAndDay.getValue0())) {
+                            for (TimeInterval timeInterval : timeAndDay.getValue1()) {
+                                entry1.getValue().remove(timeInterval);
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 
 
@@ -303,7 +305,6 @@ public class CSPAlgorithm {
 
                 solution.put(teamAndMeeting, timeAndDay);
                 Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
-                // removeEveryDayAndTimeInterval(teamAndMeeting.getValue0(), timeAndDay, newDomains); //OVO SAM DODALA MOZE LI OVAKO, UZIMAO JE ISTE TERMINE I DANE
 //                newDomains.get(teamAndMeeting).put(timeAndDay.getValue0(), timeAndDay.getValue1());
 
                 if (backtracking(teamConstraint, infoAboutMeetings, solution, newDomains))
@@ -322,14 +323,43 @@ public class CSPAlgorithm {
     }
 
 
+    public Boolean fcBacktracking(Map<String, Set<String>> teamConstraint,
+                                List<Pair<String, Integer>> infoAboutMeetings,
+                                Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+                                Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
+        if (complete(solution))
+            return true;
+
+        Pair<String, String> teamAndMeeting = getMostConstrainedVariable(domains, teamConstraint);
+        String team = teamAndMeeting.getValue0();
+        String meeting = teamAndMeeting.getValue1();
+        //TODO preskoceno sort_domain_least_constraining --treba li?
+        Map<DayOfWeek, List<TimeInterval>> domain = deepCopyForMap(domains.get(teamAndMeeting));
+        domains.remove(teamAndMeeting);
+        Pair<DayOfWeek, List<TimeInterval>> timeAndDay = getContinuousIntervals(domain, getDurationMeeting(teamAndMeeting.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+        while (timeAndDay != null) {
+            Pair<DayOfWeek, TimeInterval> overlappedTeamTimeInterval = isConsistentAssignment(teamAndMeeting, timeAndDay, solution, teamConstraint);
+            if (overlappedTeamTimeInterval == null) {
+
+                solution.put(teamAndMeeting, timeAndDay);
+                Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
+                removeEveryDayAndTimeInterval(teamConstraint.get(teamAndMeeting.getValue0()), timeAndDay, newDomains);
+
+
+                if (fcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains))
+                    return true;
+
+                solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
+                domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
+            } else {
+                domain.get(overlappedTeamTimeInterval.getValue0()).remove(overlappedTeamTimeInterval.getValue1());
+            }
+            timeAndDay = getContinuousIntervals(domain, getDurationMeeting(teamAndMeeting.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+        }
+
+        return false;
+
+    }
+
+
 }
-
-
-// Na osnovu trajanja sastanka naci vezane parove i izbaciti ih iz domena//
-// Proveriti da li je uzet termin koji nije u available .. is_consistent_assignment
-//solution dodati resenje
-//deepcopy domena
-//u novom domenu za izabrani tim i sastanak, dodeliti samo izabranu vrednost (npr solution)
-//azurirati available
-//ostatak znas
-//
