@@ -1,7 +1,7 @@
 package rs.ac.bg.etf;
 
 public enum DayOfWeek {
-    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY;
 
     public static DayOfWeek fromString(String day) {
         switch (day) {
@@ -15,10 +15,6 @@ public enum DayOfWeek {
                 return THURSDAY;
             case "Friday":
                 return FRIDAY;
-            case "Saturday":
-                return SATURDAY;
-            case "Sunday":
-                return SUNDAY;
             default:
                 return null;
         }

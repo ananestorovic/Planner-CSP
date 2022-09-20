@@ -1,3 +1,5 @@
 
-D
-resources/teams.json,7\7\779c36fd71417e5a2087b777db5975a7d9d24f3f
+\
+,src/main/java/rs/ac/bg/etf/TimeInterval.java,b\7\b7725b5728e6939f15abc28e14be6379a71e6c77
+G
+resources/meetings.json,7\5\75d320aa785469e5645ee26ef0510571f7e1a367

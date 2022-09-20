@@ -18,17 +18,17 @@ public class CSPAlgorithm {
         return solution.entrySet().stream().allMatch(mapEntry -> !mapEntry.getValue().getValue1().isEmpty());
     }
 
+    //
     public Pair<String, String> getMostConstrainedVariable(Map<Pair<String, String>, Map<DayOfWeek,
-            List<TimeInterval>>> available, Map<String, List<String>> teamConstraint) {
+            List<TimeInterval>>> available, Map<String, Set<String>> teamConstraint) {
 
-        Pair<String, String> mostConstrainedVariable = available.entrySet().stream().sorted(Comparator.comparing(
-                        CSPAlgorithm::getIntervalsSum
-                ).thenComparing(pairMapEntry -> getTeamConstraintSize(teamConstraint, pairMapEntry))
-                .reversed()).map(entry -> entry.getKey()).collect(Collectors.toList()).remove(0);
-        return mostConstrainedVariable;
+        return available.entrySet().stream().sorted(Comparator.comparing(
+                        (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> pairMapEntry) -> getTeamConstraintSize(teamConstraint, pairMapEntry)
+                ).reversed().thenComparing(CSPAlgorithm::getIntervalsSum)
+        ).map(entry -> entry.getKey()).collect(Collectors.toList()).remove(0);
     }
 
-    private static int getTeamConstraintSize(Map<String, List<String>> teamConstraint, Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> pairMapEntry) {
+    private static int getTeamConstraintSize(Map<String, Set<String>> teamConstraint, Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> pairMapEntry) {
         return teamConstraint.get(pairMapEntry.getKey().getValue0()).size();
     }
 
@@ -171,7 +171,7 @@ public class CSPAlgorithm {
         return new TimeInterval(v0, v1, v3, v4);
     }
 
-    public Pair<DayOfWeek, List<TimeInterval>> getContinuousIntervals( Map<DayOfWeek, List<TimeInterval>> domain, int numberOfIntervals) {
+    public Pair<DayOfWeek, List<TimeInterval>> getContinuousIntervals(Map<DayOfWeek, List<TimeInterval>> domain, int numberOfIntervals) {
         List<TimeInterval> intervals = new ArrayList<>();
         Pair<DayOfWeek, List<TimeInterval>> timeAndDay = null;
 
@@ -195,7 +195,7 @@ public class CSPAlgorithm {
                     prev = timeInterval;
                 }
                 if (n == 0) {
-                    return   new Pair<>(oneDayEntry.getKey(), intervals);
+                    return new Pair<>(oneDayEntry.getKey(), intervals);
                 }
             }
         }
@@ -221,18 +221,20 @@ public class CSPAlgorithm {
 
     public Pair<DayOfWeek, TimeInterval> isConsistentAssignment(Pair<String, String> teamAndMeeting, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
                                                                 Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                                                Map<String, List<String>> teamConstraint) {
+                                                                Map<String, Set<String>> teamConstraint) {
 
-        List<String> teamConstraintList = teamConstraint.get(teamAndMeeting.getValue0());
-        if (teamConstraintList == null) return null;
+        Set<String> teamConstraintList = teamConstraint.get(teamAndMeeting.getValue0());
+        teamConstraintList.add(teamAndMeeting.getValue0());
+        //if (teamConstraintList == null) return null;
 
-        for (String team : teamConstraintList) {
-            Pair<DayOfWeek, List<TimeInterval>> timeAndDayConstraint = solution.get(new Pair<>(team, teamAndMeeting.getValue1()));
+
+        for (Pair<String, String> teamAndMeetingForCompare : generateAllVariables(teamConstraintList)) {
+            Pair<DayOfWeek, List<TimeInterval>> timeAndDayConstraint = solution.get(teamAndMeetingForCompare);
 
             if (timeAndDay.getValue0().equals(timeAndDayConstraint.getValue0())) {
                 for (TimeInterval timeInterval : timeAndDay.getValue1()) {
                     for (TimeInterval timeIntervalConstraint : timeAndDayConstraint.getValue1()) {
-                        if (timeInterval.equals(timeIntervalConstraint)){
+                        if (timeInterval.equals(timeIntervalConstraint)) {
                             return new Pair<>(timeAndDay.getValue0(), timeInterval);
                         }
                     }
@@ -242,8 +244,46 @@ public class CSPAlgorithm {
         return null;
     }
 
+    private List<Pair<String, String>> generateAllVariables(Set<String> teamConstraintList) {
+        List<Pair<String, String>> variables = new ArrayList<>();
+        for(String teamName: teamConstraintList){
+            for(String meetingName: fp.getMeetings()){
+                variables.add(new Pair<>(teamName, meetingName));
+            }
+        }
+        return variables;
+    }
 
-    public Boolean backtracking(Map<String, List<String>> teamConstraint,
+    private Map<DayOfWeek, List<TimeInterval>> deepCopyForMap(Map<DayOfWeek, List<TimeInterval>> dayOfWeekListMap) {
+        Map<DayOfWeek, List<TimeInterval>> newMap = new HashMap<>();
+        for (Map.Entry<DayOfWeek, List<TimeInterval>> entry : dayOfWeekListMap.entrySet()) {
+            List<TimeInterval> newList = new ArrayList<>();
+            for (TimeInterval timeInterval : entry.getValue()) {
+                newList.add(new TimeInterval(timeInterval.getStartHour(), timeInterval.getStartMinute(),
+                        timeInterval.getEndHour(), timeInterval.getEndMinute()));
+            }
+            newMap.put(entry.getKey(), newList);
+        }
+        return newMap;
+    }
+
+    public void removeEveryDayAndTimeInterval(String team, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
+                                              Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
+        for (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> entry : domain.entrySet()) {
+            if (entry.getKey().getValue0().equals(team)) {
+                for (Map.Entry<DayOfWeek, List<TimeInterval>> entry1 : entry.getValue().entrySet()) {
+                    if (entry1.getKey().equals(timeAndDay.getValue0())) {
+                        for (TimeInterval timeInterval : timeAndDay.getValue1()) {
+                            entry1.getValue().remove(timeInterval);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    public Boolean backtracking(Map<String, Set<String>> teamConstraint,
                                 List<Pair<String, Integer>> infoAboutMeetings,
                                 Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
                                 Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
@@ -263,12 +303,14 @@ public class CSPAlgorithm {
 
                 solution.put(teamAndMeeting, timeAndDay);
                 Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
+                // removeEveryDayAndTimeInterval(teamAndMeeting.getValue0(), timeAndDay, newDomains); //OVO SAM DODALA MOZE LI OVAKO, UZIMAO JE ISTE TERMINE I DANE
 //                newDomains.get(teamAndMeeting).put(timeAndDay.getValue0(), timeAndDay.getValue1());
 
                 if (backtracking(teamConstraint, infoAboutMeetings, solution, newDomains))
                     return true;
 
-                solution.remove(teamAndMeeting);
+                solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
+                domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
             } else {
                 domain.get(overlappedTeamTimeInterval.getValue0()).remove(overlappedTeamTimeInterval.getValue1());
             }
@@ -279,18 +321,6 @@ public class CSPAlgorithm {
 
     }
 
-    private Map<DayOfWeek, List<TimeInterval>> deepCopyForMap(Map<DayOfWeek, List<TimeInterval>> dayOfWeekListMap) {
-        Map<DayOfWeek, List<TimeInterval>> newMap = new HashMap<>();
-        for (Map.Entry<DayOfWeek, List<TimeInterval>> entry : dayOfWeekListMap.entrySet()) {
-            List<TimeInterval> newList = new ArrayList<>();
-            for (TimeInterval timeInterval : entry.getValue()) {
-                newList.add(new TimeInterval(timeInterval.getStartHour(), timeInterval.getStartMinute(),
-                        timeInterval.getEndHour(), timeInterval.getEndMinute()));
-            }
-            newMap.put(entry.getKey(), newList);
-        }
-        return newMap;
-    }
 
 }
 

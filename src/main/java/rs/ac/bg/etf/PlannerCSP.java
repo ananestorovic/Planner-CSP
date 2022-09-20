@@ -6,7 +6,6 @@ package rs.ac.bg.etf;
 
 import org.javatuples.Pair;
 
-import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,8 @@ public class PlannerCSP {
         fp.generateTeamConstraint(); // just once i need to generate this
 
         fp.generateAvailable(); //initial table, later we will update this
+        Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> a = fp.getAvailable();
+
         Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution = fp.generateEmptySolution();
         csp.backtracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
                 fp.getAvailable());

@@ -5,14 +5,11 @@
 package rs.ac.bg.etf;
 
 import java.util.*;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.javatuples.Pair;
-import org.javatuples.Quartet;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,12 +31,12 @@ public class FileParser {
 
 
     private Map<String, Map<DayOfWeek, List<TimeInterval>>> unavailable;
-    private Map<Pair<String,String>, Map<DayOfWeek, List<TimeInterval>>> available;
+    private Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> available;
     private List<Pair<String, Integer>> infoAboutMeetings;
 
     private Map<String, List<Integer>> employee;
 
-    private Map<String, List<String>> teamConstraint;
+    private Map<String, Set<String>> teamConstraint;
 
     private List<TimeInterval> allTimeIntervals;
 
@@ -74,7 +71,7 @@ public class FileParser {
         sMins = START_MINS;
         eMins += INTERVAL;
 
-        while (eHours < END_HOURS) {
+        while (true) {
             TimeInterval element = new TimeInterval(sHours, sMins, eHours, eMins);
             sMins += INTERVAL;
             if (sMins % (2 * INTERVAL) == 0) {
@@ -86,6 +83,7 @@ public class FileParser {
                 eMins = 0;
             }
             allTimeIntervals.add(element);
+            if (element.getEndHour() == END_HOURS && element.getEndMinute() == END_MINS) break;
         }
     }
 
@@ -98,12 +96,20 @@ public class FileParser {
         return infoAboutMeetings;
     }
 
-    public Map<String, List<String>> getTeamConstraint() {
+    public Map<String, Set<String>> getTeamConstraint() {
         return teamConstraint;
     }
 
     public Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> getAvailable() {
         return available;
+    }
+
+    public List<String> getMeetings() {
+        return meetings;
+    }
+
+    public List<TimeInterval> getAllTimeIntervals() {
+        return allTimeIntervals;
     }
 
     public void parseTeamsFile(String fileName) {
@@ -140,7 +146,7 @@ public class FileParser {
 
         employee.put(name, new ArrayList<>());
 
-        teamConstraint.put(name, new ArrayList<>());
+        teamConstraint.put(name, new HashSet<>());
 
     }
 
@@ -238,14 +244,14 @@ public class FileParser {
 
     public void generateTeamConstraint() {
 
-        employee.forEach((k, v) ->
+        employee.forEach((teamNameOne, employeeIdsOne) ->
 
-            employee.forEach((key, val) -> {
+                employee.forEach((teamNameTwo, employeesIdTwo) -> {
 
-                if (!k.equals(key) && v.stream().anyMatch(val::contains)) {
-                        teamConstraint.get(k).add(key);
+                    if (!teamNameOne.equals(teamNameTwo) && employeeIdsOne.stream().anyMatch(employeesIdTwo::contains)) {
+                        teamConstraint.get(teamNameOne).add(teamNameTwo);
                     }
-            })
+                })
 
         );
     }
@@ -292,8 +298,8 @@ public class FileParser {
 
         sortUnavailable(unavailable);
         sortInfoAboutMeetings(infoAboutMeetings);
-        for (String teamName: teams) {
-            for (Pair<String, Integer> infoAboutMeeting: infoAboutMeetings) {
+        for (String teamName : teams) {
+            for (Pair<String, Integer> infoAboutMeeting : infoAboutMeetings) {
                 available.put(new Pair<>(teamName, infoAboutMeeting.getValue0()), new HashMap<>());
                 generateAvailableIntervals(teamName, infoAboutMeeting.getValue0(), unavailable);
             }
@@ -317,13 +323,13 @@ public class FileParser {
             for (TimeInterval availableInterval : teamAvailableIntervals) {
 
                 // case when someone requested whole day off
-                if (unavailableInterval.getStartHour() == START_HOURS && unavailableInterval.getStartMinute() == START_MINS &&
-                        unavailableInterval.getEndHour() == END_HOURS && unavailableInterval.getEndMinute() == END_MINS) {
-                   return new ArrayList<>();
+                if (unavailableInterval.getStartHour() == START_HOURS && unavailableInterval.getStartMinute() == START_MINS && unavailableInterval.getEndHour() == END_HOURS && unavailableInterval.getEndMinute() == END_MINS) {
+                    return new ArrayList<>();
                 } else {
-                    if (isIntervalInsideAnother(unavailableInterval, availableInterval)
-                            || isIntervalStartTimeSame(availableInterval, unavailableInterval)
-                            || isIntervalEndTimeSame(availableInterval, unavailableInterval)) {
+                    if (isIntervalStartGreaterOrEqualRequestStart(unavailableInterval, availableInterval)
+                            && isIntervalStartLessRequestEnd(unavailableInterval, availableInterval)
+                            && isIntervalEndGreaterRequestStart(unavailableInterval, availableInterval)
+                            && isIntervalEndLessOrEqualRequestEnd(unavailableInterval, availableInterval)) {
                         intervalsToRemove.add(availableInterval);
                     }
                 }
@@ -336,20 +342,22 @@ public class FileParser {
         return teamAvailableIntervals;
     }
 
-    private static boolean isIntervalEndTimeSame(TimeInterval unavailableInterval, TimeInterval availableInterval) {
-        return unavailableInterval.getEndHour() == availableInterval.getEndMinute() &&
-                unavailableInterval.getEndMinute() == availableInterval.getEndMinute();
+    private boolean isIntervalEndLessOrEqualRequestEnd(TimeInterval request, TimeInterval interval) {
+        return interval.getEndHour() < request.getEndHour() || (interval.getEndHour() == request.getEndHour() && interval.getEndMinute() <= request.getEndMinute());
     }
 
-    private static boolean isIntervalStartTimeSame(TimeInterval unavailableInterval, TimeInterval availableInterval) {
-        return availableInterval.getStartHour() == unavailableInterval.getStartHour() &&
-                availableInterval.getStartMinute() == unavailableInterval.getStartMinute();
+    private static boolean isIntervalEndGreaterRequestStart(TimeInterval request, TimeInterval interval) {
+        return request.getEndHour() > interval.getStartHour() || (request.getEndHour() == interval.getStartHour() && request.getEndMinute() > interval.getStartMinute());
     }
 
-    private static boolean isIntervalInsideAnother(TimeInterval unavailableInterval, TimeInterval availableInterval) {
-        return availableInterval.getStartHour() > unavailableInterval.getStartHour() &&
-                availableInterval.getEndHour() < unavailableInterval.getEndHour();
+    private static boolean isIntervalStartLessRequestEnd(TimeInterval request, TimeInterval interval) {
+        return interval.getStartHour() < request.getEndHour() || (interval.getStartHour() == request.getEndHour() && interval.getStartMinute() < request.getEndMinute());
     }
+
+    private static boolean isIntervalStartGreaterOrEqualRequestStart(TimeInterval requestInterval, TimeInterval interval) {
+        return interval.getStartHour() > requestInterval.getStartHour() || (interval.getStartHour() == requestInterval.getStartHour() && interval.getStartMinute() >= requestInterval.getStartMinute());
+    }
+
 
     public Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> generateDomain() {
         Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain = new HashMap<>();
@@ -377,7 +385,7 @@ public class FileParser {
         return solution;
     }
 
-    public void sortInfoAboutMeetings( List<Pair<String, Integer>>infoAboutMeetings){
+    public void sortInfoAboutMeetings(List<Pair<String, Integer>> infoAboutMeetings) {
         infoAboutMeetings.sort(Comparator.comparing(Pair::getValue1, Comparator.reverseOrder()));
     }
 
@@ -386,4 +394,6 @@ public class FileParser {
             System.out.println(teamAndMeeting.getValue0() + " " + teamAndMeeting.getValue1() + " " + solution.get(teamAndMeeting).getValue0() + " " + solution.get(teamAndMeeting).getValue1());
         }
     }
+
+
 }
