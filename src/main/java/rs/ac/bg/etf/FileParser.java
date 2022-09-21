@@ -34,7 +34,7 @@ public class FileParser {
     private Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> available;
     private List<Pair<String, Integer>> infoAboutMeetings;
 
-    private Map<String, List<Integer>> employee;
+    private Map<String, Set<Integer>> employee;
 
     private Map<String, Set<String>> teamConstraint;
 
@@ -144,7 +144,7 @@ public class FileParser {
 
         unavailable.put(name, daysWithHoursOff);
 
-        employee.put(name, new ArrayList<>());
+        employee.put(name, new HashSet<>());
 
         teamConstraint.put(name, new HashSet<>());
 
@@ -248,7 +248,7 @@ public class FileParser {
 
                 employee.forEach((teamNameTwo, employeesIdTwo) -> {
 
-                    if (!teamNameOne.equals(teamNameTwo) && employeeIdsOne.stream().anyMatch(employeesIdTwo::contains)) {
+                    if (employeeIdsOne.stream().anyMatch(employeesIdTwo::contains)) {
                         teamConstraint.get(teamNameOne).add(teamNameTwo);
                     }
                 })

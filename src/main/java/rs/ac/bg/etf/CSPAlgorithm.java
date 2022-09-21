@@ -223,7 +223,7 @@ public class CSPAlgorithm {
                                                                 Map<String, Set<String>> teamConstraint) {
 
         Set<String> teamConstraintList = teamConstraint.get(teamAndMeeting.getValue0());
-        teamConstraintList.add(teamAndMeeting.getValue0());
+//        teamConstraintList.add(teamAndMeeting.getValue0());
         //if (teamConstraintList == null) return null;
 
 
@@ -245,8 +245,8 @@ public class CSPAlgorithm {
 
     private List<Pair<String, String>> generateAllVariables(Set<String> teamConstraintList) {
         List<Pair<String, String>> variables = new ArrayList<>();
-        for(String teamName: teamConstraintList){
-            for(String meetingName: fp.getMeetings()){
+        for (String teamName : teamConstraintList) {
+            for (String meetingName : fp.getMeetings()) {
                 variables.add(new Pair<>(teamName, meetingName));
             }
         }
@@ -268,7 +268,7 @@ public class CSPAlgorithm {
 
     public void removeEveryDayAndTimeInterval(Set<String> listOfConstrainedTeams, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
                                               Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
-        for(String constrainedTeam: listOfConstrainedTeams){
+        for (String constrainedTeam : listOfConstrainedTeams) {
             for (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> entry : domain.entrySet()) {
                 if (entry.getKey().getValue0().equals(constrainedTeam)) {
                     for (Map.Entry<DayOfWeek, List<TimeInterval>> entry1 : entry.getValue().entrySet()) {
@@ -324,9 +324,9 @@ public class CSPAlgorithm {
 
 
     public Boolean fcBacktracking(Map<String, Set<String>> teamConstraint,
-                                List<Pair<String, Integer>> infoAboutMeetings,
-                                Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
+                                  List<Pair<String, Integer>> infoAboutMeetings,
+                                  Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+                                  Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
         if (complete(solution))
             return true;
 
@@ -359,6 +359,99 @@ public class CSPAlgorithm {
 
         return false;
 
+    }
+
+    public Boolean arcBacktracking(Map<String, Set<String>> teamConstraint,
+                                   List<Pair<String, Integer>> infoAboutMeetings,
+                                   Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+                                   Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
+        if (complete(solution))
+            return true;
+
+        Pair<String, String> teamAndMeeting = getMostConstrainedVariable(domains, teamConstraint);
+        String team = teamAndMeeting.getValue0();
+        String meeting = teamAndMeeting.getValue1();
+        //TODO preskoceno sort_domain_least_constraining --treba li?
+        Map<DayOfWeek, List<TimeInterval>> domain = deepCopyForMap(domains.get(teamAndMeeting));
+        domains.remove(teamAndMeeting);
+        Pair<DayOfWeek, List<TimeInterval>> timeAndDay = getContinuousIntervals(domain, getDurationMeeting(teamAndMeeting.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+        while (timeAndDay != null) {
+            Pair<DayOfWeek, TimeInterval> overlappedTeamTimeInterval = isConsistentAssignment(teamAndMeeting, timeAndDay, solution, teamConstraint);
+            if (overlappedTeamTimeInterval == null) {
+
+                solution.put(teamAndMeeting, timeAndDay);
+                Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
+                removeEveryDayAndTimeInterval(teamConstraint.get(teamAndMeeting.getValue0()), timeAndDay, newDomains);
+
+                if (!arcConsistency(newDomains, teamConstraint, teamAndMeeting, infoAboutMeetings)) {
+                    solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
+                    domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
+                    timeAndDay = getContinuousIntervals(domain, getDurationMeeting(teamAndMeeting.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+                    continue;
+                }
+
+                if (arcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains))
+                    return true;
+
+                solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
+                domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
+            } else {
+                domain.get(overlappedTeamTimeInterval.getValue0()).remove(overlappedTeamTimeInterval.getValue1());
+            }
+            timeAndDay = getContinuousIntervals(domain, getDurationMeeting(teamAndMeeting.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+        }
+
+        return false;
+
+    }
+
+    private boolean arcConsistency(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains, Map<String, Set<String>> teamConstraints, Pair<String, String> teamAndMeeting, List<Pair<String, Integer>> infoAboutMeetings) {
+
+        Set<String> listOfTeams = teamConstraints.get(teamAndMeeting.getValue0());
+
+        for (String team : listOfTeams) {
+            for (String meeting : fp.getMeetings()) {
+                if (team.equals(teamAndMeeting.getValue0()) && meeting.equals(teamAndMeeting.getValue1()))
+                    continue;
+                Pair<String, String> newTeamAndMeeting = new Pair<>(team, meeting);
+                if (!domains.containsKey(newTeamAndMeeting)) {
+                    continue;
+                }
+                Map<DayOfWeek, List<TimeInterval>> domain = deepCopyForMap(domains.get(newTeamAndMeeting));
+                Pair<DayOfWeek, List<TimeInterval>> timeAndDay = getContinuousIntervals(domain, getDurationMeeting(meeting, infoAboutMeetings) / FileParser.INTERVAL);
+
+                if (timeAndDay == null)
+                    return false;
+                else {
+                    Set<String> listOfConstrainedTeams = teamConstraints.get(team);
+                    for (String constrainedTeam : listOfConstrainedTeams) {
+                        for (String constrainedMeeting : fp.getMeetings()) {
+                            if ((constrainedTeam.equals(team) && constrainedMeeting.equals(meeting)) || (constrainedTeam.equals(teamAndMeeting.getValue0()) && constrainedMeeting.equals(teamAndMeeting.getValue1())))
+                                continue;
+                            Pair<String, String> newConstrainedTeamAndMeeting = new Pair<>(constrainedTeam, constrainedMeeting);
+                            //treba li i ovde kopija domena??
+                            if (!domains.containsKey(newConstrainedTeamAndMeeting)) {
+                                continue;
+                            }
+                            Map<DayOfWeek, List<TimeInterval>> newDomain = deepCopyForMap(domains.get(newConstrainedTeamAndMeeting));
+                            for (TimeInterval interval : timeAndDay.getValue1()) {
+                                if (newDomain.get(timeAndDay.getValue0()).contains(interval)) {
+                                    newDomain.get(timeAndDay.getValue0()).remove(interval);
+                                }
+                            }
+                            if (getContinuousIntervals(newDomain, getDurationMeeting(constrainedMeeting, infoAboutMeetings) / FileParser.INTERVAL) == null)
+                                return false;
+
+                        }
+                    }
+                }
+
+            }
+        }
+
+        //return true;
+
+        return true;
     }
 
 

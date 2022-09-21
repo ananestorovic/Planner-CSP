@@ -28,7 +28,7 @@ public class PlannerCSP {
         Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> a = fp.getAvailable();
 
         Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution = fp.generateEmptySolution();
-        csp.fcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+        csp.arcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
                 fp.getAvailable());
 
         fp.printSolution(solution);
