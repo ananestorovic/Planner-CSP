@@ -5,19 +5,60 @@
 package rs.ac.bg.etf.gui;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import enums.CspAlgorithmType;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Point;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.border.Border;
+import javax.swing.plaf.synth.Region;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+import org.javatuples.Pair;
+import org.javatuples.Quartet;
 
 /**
  *
  * @author ana
  */
-public class Gui extends javax.swing.JFrame {
+public class Gui extends javax.swing.JFrame implements GuiController {
+
+    Map<String, List<Quartet<Integer, Integer, Integer, Integer>>> daysOfWeek = new HashMap<>();
 
     /**
      * Creates new form Gui
      */
     public Gui() {
+        List<Quartet<Integer, Integer, Integer, Integer>> freeSlotsList = new ArrayList<>();
+        freeSlotsList.add(new Quartet<>(9, 00, 14, 30));
+        freeSlotsList.add(new Quartet<>(16, 00, 17, 00));
+
+        for (String oneDay : DAYS_OF_WEEK) {
+            daysOfWeek.put(oneDay, new ArrayList<>(freeSlotsList));
+        }
+        List<String> teamNames = new ArrayList<>();
+        teamNames.add("teamOne");
+        teamNames.add("teamTwo");
+        teamNames.add("teamThree");
+        teamNames.add("teamFour");
+
         initComponents();
+
+        initTeamTables(teamNames, freeSlotsList);
     }
 
     /**
@@ -32,216 +73,280 @@ public class Gui extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         mainPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
         JPanel2 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        opcija_1 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
+        basicCsp = new javax.swing.JRadioButton();
+        forwardChecking = new javax.swing.JRadioButton();
+        arcConsistencyWithFC = new javax.swing.JRadioButton();
+        startSimulation = new javax.swing.JButton();
         jPanel7 = new javax.swing.JPanel();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        teamAName = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        teamATable = new javax.swing.JTable();
+        jPanel5 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        teamBTable = new javax.swing.JTable();
+        teamBName = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        teamCTable = new javax.swing.JTable();
+        teamCName = new javax.swing.JLabel();
+        jPanel10 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTable4 = new javax.swing.JTable();
+        teamDTable = new javax.swing.JTable();
+        teamDName = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        nextStep = new javax.swing.JButton();
+        goToStartPage = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(500, 500));
 
+        mainPanel.setRequestFocusEnabled(false);
         mainPanel.setLayout(new java.awt.CardLayout());
 
-        jPanel1.setLayout(new java.awt.GridLayout());
+        jPanel1.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 195, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 338, Short.MAX_VALUE)
-        );
-
-        jPanel1.add(jPanel5);
-
+        JPanel2.setMinimumSize(new java.awt.Dimension(99, 600));
+        JPanel2.setPreferredSize(new java.awt.Dimension(99, 600));
         JPanel2.setLayout(new java.awt.BorderLayout());
 
         jPanel4.setLayout(new java.awt.GridLayout(0, 1));
 
-        buttonGroup1.add(jRadioButton2);
-        jRadioButton2.setText("jRadioButton2");
-        jRadioButton2.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(basicCsp);
+        basicCsp.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        basicCsp.setText("Basic CSP");
+        basicCsp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton2ActionPerformed(evt);
+                basicCspActionPerformed(evt);
             }
         });
-        jPanel4.add(jRadioButton2);
+        jPanel4.add(basicCsp);
 
-        buttonGroup1.add(opcija_1);
-        opcija_1.setText("jRadioButton1");
-        jPanel4.add(opcija_1);
+        buttonGroup1.add(forwardChecking);
+        forwardChecking.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        forwardChecking.setText("Forward checking");
+        jPanel4.add(forwardChecking);
 
-        buttonGroup1.add(jRadioButton3);
-        jRadioButton3.setText("jRadioButton3");
-        jRadioButton3.setAlignmentX(1.0F);
-        jRadioButton3.setAlignmentY(1.0F);
-        jRadioButton3.setAutoscrolls(true);
-        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup1.add(arcConsistencyWithFC);
+        arcConsistencyWithFC.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        arcConsistencyWithFC.setText("Arc consistency with forward checking");
+        arcConsistencyWithFC.setAlignmentX(1.0F);
+        arcConsistencyWithFC.setAlignmentY(1.0F);
+        arcConsistencyWithFC.setAutoscrolls(true);
+        arcConsistencyWithFC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButton3ActionPerformed(evt);
+                arcConsistencyWithFCActionPerformed(evt);
             }
         });
-        jPanel4.add(jRadioButton3);
+        jPanel4.add(arcConsistencyWithFC);
 
         JPanel2.add(jPanel4, java.awt.BorderLayout.LINE_START);
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("jLabel1");
-        JPanel2.add(jLabel1, java.awt.BorderLayout.PAGE_START);
-
-        jButton2.setText("jButton2");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        startSimulation.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        startSimulation.setText("Start simulation");
+        startSimulation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                startSimulationActionPerformed(evt);
             }
         });
-        JPanel2.add(jButton2, java.awt.BorderLayout.PAGE_END);
+        JPanel2.add(startSimulation, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.add(JPanel2);
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 195, Short.MAX_VALUE)
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(250, 250, 250)
+                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(250, Short.MAX_VALUE))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 338, Short.MAX_VALUE)
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(194, 194, 194)
+                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(121, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel3);
+        jPanel1.add(jPanel9, java.awt.BorderLayout.CENTER);
 
         mainPanel.add(jPanel1, "card3");
 
+        jPanel7.setRequestFocusEnabled(false);
+        jPanel7.setLayout(new java.awt.BorderLayout());
+
+        jPanel8.setMinimumSize(new java.awt.Dimension(500, 600));
+        jPanel8.setPreferredSize(new java.awt.Dimension(700, 600));
+        jPanel8.setLayout(new java.awt.GridLayout(0, 2));
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        teamAName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamAName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        teamAName.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jPanel2.add(teamAName, java.awt.BorderLayout.PAGE_START);
+
+        teamATable.setModel(new javax.swing.table.DefaultTableModel(
+            WORK_TIMES_IN_DAY,
+            TABE_HEADER
+        ));
+        teamATable.setShowGrid(true);
+        jScrollPane1.setViewportView(teamATable);
+
+        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel8.add(jPanel2);
+
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        teamBTable.setModel(new javax.swing.table.DefaultTableModel(
+            WORK_TIMES_IN_DAY,
+            TABE_HEADER
+        ));
+        teamBTable.setShowGrid(true);
+        jScrollPane3.setViewportView(teamBTable);
+
+        jPanel5.add(jScrollPane3, java.awt.BorderLayout.CENTER);
+
+        teamBName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamBName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel5.add(teamBName, java.awt.BorderLayout.PAGE_START);
+
+        jPanel8.add(jPanel5);
+
         jPanel6.setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setLayout(new java.awt.GridLayout());
-        jPanel6.add(jPanel2, java.awt.BorderLayout.CENTER);
-
-        jPanel7.setLayout(new java.awt.GridLayout(2, 2));
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
+        teamCTable.setModel(new javax.swing.table.DefaultTableModel(
+            WORK_TIMES_IN_DAY,
+            TABE_HEADER
         ));
-        jScrollPane1.setViewportView(jTable1);
+        teamCTable.setShowGrid(true);
+        jScrollPane2.setViewportView(teamCTable);
 
-        jPanel7.add(jScrollPane1);
+        jPanel6.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
+        teamCName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamCName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel6.add(teamCName, java.awt.BorderLayout.PAGE_START);
+
+        jPanel8.add(jPanel6);
+
+        jPanel10.setLayout(new java.awt.BorderLayout());
+
+        teamDTable.setModel(new javax.swing.table.DefaultTableModel(
+            WORK_TIMES_IN_DAY,
+            TABE_HEADER
         ));
-        jScrollPane2.setViewportView(jTable2);
+        teamDTable.setShowGrid(true);
+        jScrollPane4.setViewportView(teamDTable);
 
-        jPanel7.add(jScrollPane2);
+        jPanel10.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+        teamDName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamDName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel10.add(teamDName, java.awt.BorderLayout.PAGE_START);
+
+        jPanel8.add(jPanel10);
+
+        jPanel7.add(jPanel8, java.awt.BorderLayout.PAGE_START);
+        jPanel8.getAccessibleContext().setAccessibleDescription("");
+
+        jPanel3.setLayout(new java.awt.GridLayout());
+
+        nextStep.setText("Next step");
+        nextStep.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextStepActionPerformed(evt);
             }
-        ));
-        jScrollPane3.setViewportView(jTable3);
+        });
+        jPanel3.add(nextStep);
 
-        jPanel7.add(jScrollPane3);
-
-        jTable4.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+        goToStartPage.setText("Go to start page");
+        goToStartPage.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                goToStartPageActionPerformed(evt);
             }
-        ));
-        jScrollPane4.setViewportView(jTable4);
+        });
+        jPanel3.add(goToStartPage);
 
-        jPanel7.add(jScrollPane4);
+        jPanel7.add(jPanel3, java.awt.BorderLayout.CENTER);
 
-        jPanel6.add(jPanel7, java.awt.BorderLayout.PAGE_START);
-
-        mainPanel.add(jPanel6, "card2");
+        mainPanel.add(jPanel7, "card3");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 19, Short.MAX_VALUE)
+                .addGap(0, 6, Short.MAX_VALUE)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 19, Short.MAX_VALUE))
+                .addGap(0, 4, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 33, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 34, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton3ActionPerformed
+    private CspAlgorithmType getCspAlgorithmTypeUsingRadioButtons() {
+        CspAlgorithmType retVal = null;
+        if (basicCsp.isSelected()) {
+            retVal = CspAlgorithmType.BASIC_CSP;
+        }
+        if (forwardChecking.isSelected()) {
+            retVal = CspAlgorithmType.FC;
+        }
+        if (arcConsistencyWithFC.isSelected()) {
+            retVal = CspAlgorithmType.ARC_WITH_FC;
+        }
+        return retVal;
+    }
 
-    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton2ActionPerformed
+    private void startSimulationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimulationActionPerformed
+        CspAlgorithmType cspAlgorithmType = getCspAlgorithmTypeUsingRadioButtons();
+        if (cspAlgorithmType != null) {
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+            if (guiListener != null) {
+                guiListener.startSimulation(cspAlgorithmType);
+            }
+            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+            cardLayout.next(mainPanel);
+        } else {
+            JOptionPane.showMessageDialog(this, "You need to select one option", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_startSimulationActionPerformed
+
+    private void arcConsistencyWithFCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arcConsistencyWithFCActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_arcConsistencyWithFCActionPerformed
+
+    private void basicCspActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_basicCspActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_basicCspActionPerformed
+
+    private void nextStepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextStepActionPerformed
+        if (guiListener != null) {
+            guiListener.nextStep();
+        }
+    }//GEN-LAST:event_nextStepActionPerformed
+
+    private void goToStartPageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goToStartPageActionPerformed
+        if (guiListener != null) {
+            guiListener.stopSimulation();
+        }
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-        cardLayout.next(mainPanel);
-    }//GEN-LAST:event_jButton2ActionPerformed
+        cardLayout.previous(mainPanel);
+    }//GEN-LAST:event_goToStartPageActionPerformed
 
-    
-    
-    
-    
-    
-    
     /**
      * @param args the command line arguments
      */
@@ -252,7 +357,7 @@ public class Gui extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-          javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
+            javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -262,33 +367,194 @@ public class Gui extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Gui().setVisible(true);
+
             }
         });
     }
 
+    private List<Pair<LocalTime, LocalTime>> makeTerminsList(List<Quartet<Integer, Integer, Integer, Integer>> listWithQuartets) {
+        List<Pair<LocalTime, LocalTime>> helpList = new ArrayList<>();
+        listWithQuartets.forEach(e -> {
+            helpList.add(makeInterval(e.getValue0(), e.getValue1(), e.getValue2(), e.getValue3()));
+        });
+        return helpList;
+    }
+
+    private Pair<LocalTime, LocalTime> makeInterval(Integer h1, Integer m1, Integer h2, Integer m2) {
+        LocalTime firstInteral = LocalTime.of(h1, m1);
+        LocalTime secondInterval = LocalTime.of(h2, m2);
+        return new Pair<>(firstInteral, secondInterval);
+    }
+
+    @Override
+    public void initTeamTables(List<String> teamNames, List<Quartet<Integer, Integer, Integer, Integer>> freeSloots) {
+        teamsData = getTeamDataList(teamNames, freeSloots);
+        JTable[] teamTables = new JTable[]{teamATable, teamBTable, teamCTable, teamDTable};
+        JLabel[] teamNamesLabel = new JLabel[]{teamAName, teamBName, teamCName, teamDName};
+        for (int i = 0; i < teamsData.size(); i++) {
+            teamNamesLabel[i].setText(teamsData.get(i).getTeamName());
+            setTableData(teamTables[i], teamsData.get(i));
+            teamTables[i].repaint();
+        }
+    }
+
+    private List<TeamData> getTeamDataList(List<String> teamNames, List<Quartet<Integer, Integer, Integer, Integer>> freeSloots) {
+        List<TeamData> tempTeamList = new ArrayList<>();
+        for (String teamName : teamNames) {
+            TeamData teamData = new TeamData();
+            teamData.setTeamName(teamName);
+            teamData.setFreeList(makeTerminsList(freeSloots));
+            teamData.setMeetings(new HashMap<>());
+            tempTeamList.add(teamData);
+        }
+        return tempTeamList.stream().limit(4).collect(Collectors.toList());
+    }
+
+    @Override
+    public void refreshGui(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> teamData, HashMap<String, List<Pair<String, Boolean>>> meetings) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public void registerListener(GuiListener guiListener) {
+        this.guiListener = guiListener;
+    }
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel JPanel2;
+    private javax.swing.JRadioButton arcConsistencyWithFC;
+    private javax.swing.JRadioButton basicCsp;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JRadioButton forwardChecking;
+    private javax.swing.JButton goToStartPage;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
-    private javax.swing.JTable jTable4;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JRadioButton opcija_1;
+    private javax.swing.JButton nextStep;
+    private javax.swing.JButton startSimulation;
+    private javax.swing.JLabel teamAName;
+    private javax.swing.JTable teamATable;
+    private javax.swing.JLabel teamBName;
+    private javax.swing.JTable teamBTable;
+    private javax.swing.JLabel teamCName;
+    private javax.swing.JTable teamCTable;
+    private javax.swing.JLabel teamDName;
+    private javax.swing.JTable teamDTable;
     // End of variables declaration//GEN-END:variables
+
+    private class StatusColumnCellRenderer extends DefaultTableCellRenderer {
+
+        private static final String GREY_COLOR_HEX_CODE = "#3c3f41";
+
+        TeamData teamData;
+
+        private StatusColumnCellRenderer(TeamData team) {
+            this.teamData = team;
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+
+            javax.swing.JLabel labelCell = (javax.swing.JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+            if (col == 0) {
+                return labelCell;
+            }
+            col -= 1;
+
+            String dayOfWeek = DAYS_OF_WEEK[col];
+            List<Pair<LocalTime, LocalTime>> freeList = teamData.getFreeList();
+            if (freeList == null) {
+                return labelCell;
+            }
+
+            LocalTime currentRowTime = times[row];
+            boolean isFree = freeList.stream().anyMatch(onePair -> {
+                LocalTime startTime = onePair.getValue0();
+                LocalTime endTime = onePair.getValue1();
+                if (currentRowTime.compareTo(startTime) >= 0 && currentRowTime.compareTo(endTime) < 0) {
+                    return true;
+                }
+                return false;
+
+            });
+            //Get the status for the current row.
+            Border border = BorderFactory.createLineBorder(Color.decode(GREY_COLOR_HEX_CODE), 1);
+            labelCell.setBorder(border);
+
+            if (isFree) {
+                labelCell.setBackground(Color.GREEN);
+            } else {
+                labelCell.setBackground(Color.RED);
+            }
+            return labelCell;
+
+        }
+    }
+
+    private List<TeamData> teamsData = new ArrayList<>();
+
+    private final Object[][] WORK_TIMES_IN_DAY = new Object[][]{
+        {"09:00"},
+        {"09:30"},
+        {"10:00"},
+        {"10:30"},
+        {"11:00"},
+        {"11:30"},
+        {"12:00"},
+        {"12:30"},
+        {"13:00"},
+        {"13:30"},
+        {"14:00"},
+        {"14:30"},
+        {"15:00"},
+        {"15:30"},
+        {"16:00"},
+        {"16:30"},
+        {"17:00"}
+    };
+
+    private String[] TABE_HEADER = new String[]{
+        "", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
+    };
+    private String[] DAYS_OF_WEEK = Arrays.copyOfRange(TABE_HEADER, 1, TABE_HEADER.length);
+
+    private void setTableData(JTable table, TeamData teamsData) {
+        for (int col = 1; col < TABE_HEADER.length; col++) { // skip first col
+            table.getColumnModel().getColumn(col).setCellRenderer(new StatusColumnCellRenderer(teamsData));
+        }
+    }
+
+    private GuiListener guiListener;
+
+    private LocalTime[] times = new LocalTime[]{
+        LocalTime.of(9, 0, 0, 0),
+        LocalTime.of(9, 30, 0, 0),
+        LocalTime.of(10, 0, 0, 0),
+        LocalTime.of(10, 30, 0, 0),
+        LocalTime.of(11, 0, 0, 0),
+        LocalTime.of(11, 30, 0, 0),
+        LocalTime.of(12, 00, 0, 0),
+        LocalTime.of(12, 30, 0, 0),
+        LocalTime.of(13, 00, 0, 0),
+        LocalTime.of(13, 30, 0, 0),
+        LocalTime.of(14, 00, 0, 0),
+        LocalTime.of(14, 30, 0, 0),
+        LocalTime.of(15, 00, 0, 0),
+        LocalTime.of(15, 3, 0, 0),
+        LocalTime.of(16, 00, 0, 0),
+        LocalTime.of(16, 30, 0, 0),
+        LocalTime.of(17, 00, 0, 0),};
+
 }
