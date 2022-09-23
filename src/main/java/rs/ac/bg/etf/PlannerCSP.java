@@ -4,20 +4,36 @@
  */
 package rs.ac.bg.etf;
 
+import enums.CspAlgorithmType;
 import org.javatuples.Pair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import rs.ac.bg.etf.gui.GuiController;
+import rs.ac.bg.etf.gui.GuiListener;
 
 /**
  *
  * @author ana
  */
-public class PlannerCSP {
+public class PlannerCSP implements GuiListener, Runnable {
 
-    public static void main(String[] args) {
+    private Semaphore semaphore;
+
+    private GuiController guiController;
+
+    public PlannerCSP(GuiController guiController) {
+        this.guiController = guiController;
+        this.semaphore = new Semaphore(0);
+    }
+
+    private void runCSPAlgoritum(CspAlgorithmType cspAlgorithmType) throws InterruptedException {
+
         FileParser fp = new FileParser();
-        CSPAlgorithm csp = new CSPAlgorithm(fp);
+        CSPAlgorithm csp = new CSPAlgorithm(fp, semaphore);
 
         fp.parseMeetingsFile("resources/meetings.json");
         fp.parseTeamsFile("resources/teams.json");
@@ -28,52 +44,61 @@ public class PlannerCSP {
         Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> a = fp.getAvailable();
 
         Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution = fp.generateEmptySolution();
-        csp.arcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
-                fp.getAvailable());
 
-        fp.printSolution(solution);
+        guiController.initTeamTables(fp.getTeams(), fp.getallVarsTermin(), solution);
+        semaphore.acquire();
 
+        guiController.refreshGui(fp.getAvailable(), solution);
+        semaphore.acquire();
 
+        switch (cspAlgorithmType) {
+            case BASIC_CSP:
+                csp.fcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+                        fp.getAvailable());
+                break;
+            case FC:
+                csp.fcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+                        fp.getAvailable());
+                break;
+            case ARC_WITH_FC:
+                csp.arcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+                        fp.getAvailable());
+                break;
+            default:
+                throw new AssertionError();
+        }
 
+    }
 
-//        for (int i = 0; i < fp.getInfoAboutMeetings().size(); i++) {
-//            System.out.println(fp.getInfoAboutMeetings().get(i));
-//        }
-//
-//        for (String name : fp.getUnavailable().keySet()) {
-//            String key = name.toString();
-//            String value = fp.getUnavailable().get(name).toString();
-//            System.out.println(key + " " + value);
-//
-//        }
-//
-//        for (String name : fp.getTeamConstraint().keySet()) {
-//            String key = name.toString();
-//            String value = fp.getTeamConstraint().get(name).toString();
-//            System.out.println(key + " " + value);
-//
-//        }
-//        
+    private CspAlgorithmType cspAlgorithmType;
+    private Thread thread;
 
+    @Override
+    public void run() {
+        try {
+            runCSPAlgoritum(cspAlgorithmType);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(PlannerCSP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    @Override
+    public void startSimulation(CspAlgorithmType cspAlgorithmType) {
+        this.cspAlgorithmType = cspAlgorithmType;
+        this.thread = new Thread(this);
+        this.thread.start();
 
-//        for (String name : fp.getUnavailable().keySet()) {
-//            String key = name.toString();
-//            String value = fp.getUnavailable().get(name).toString();
-//            System.out.println(key + " " + value);
-//
-//        }
+    }
 
+    @Override
+    public void stopSimulation() {
+        this.thread.interrupt();
 
+    }
 
-//        for (String name : fp.getAvailable().keySet()) {
-//            String key = name.toString();
-//            String value = fp.getAvailable().get(name).toString();
-//            System.out.println(key + " " + value);
-//
-//        }
-
-//
+    @Override
+    public void nextStep() {
+        semaphore.release();
 
     }
 }

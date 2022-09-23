@@ -7,8 +7,12 @@ package rs.ac.bg.etf.gui;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
+import rs.ac.bg.etf.DayOfWeek;
+import rs.ac.bg.etf.PlannerCSP;
+import rs.ac.bg.etf.TimeInterval;
 
 /**
  *
@@ -16,9 +20,10 @@ import org.javatuples.Quartet;
  */
 public interface GuiController {
 
-    public void initTeamTables(List<String> teamNames, List<Quartet<Integer, Integer, Integer, Integer>> freeSloots);
+    public void initTeamTables(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution);
 
-    public void refreshGui(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> teamData,
-            HashMap<String, List<Pair<String, Boolean>>> meetings);
-    
+    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution);
+
+    public void setListener(GuiListener guiListener);
+
 }

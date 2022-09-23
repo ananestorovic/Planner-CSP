@@ -4,14 +4,17 @@ import org.javatuples.Pair;
 import org.javatuples.Quartet;
 
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 
 public class CSPAlgorithm {
 
     private FileParser fp;
+    private Semaphore semaphore;
 
-    public CSPAlgorithm(FileParser fp) {
+    public CSPAlgorithm(FileParser fp, Semaphore semaphore) {
         this.fp = fp;
+        this.semaphore = semaphore;
     }
 
     public boolean complete(Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
@@ -19,12 +22,11 @@ public class CSPAlgorithm {
     }
 
     //
-    public Pair<String, String> getMostConstrainedVariable(Map<Pair<String, String>, Map<DayOfWeek,
-            List<TimeInterval>>> available, Map<String, Set<String>> teamConstraint) {
+    public Pair<String, String> getMostConstrainedVariable(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> available, Map<String, Set<String>> teamConstraint) {
 
         return available.entrySet().stream().sorted(Comparator.comparing(
-                        (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> pairMapEntry) -> getTeamConstraintSize(teamConstraint, pairMapEntry)
-                ).reversed().thenComparing(CSPAlgorithm::getIntervalsSum)
+                (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> pairMapEntry) -> getTeamConstraintSize(teamConstraint, pairMapEntry)
+        ).reversed().thenComparing(CSPAlgorithm::getIntervalsSum)
         ).map(entry -> entry.getKey()).collect(Collectors.toList()).remove(0);
     }
 
@@ -49,7 +51,9 @@ public class CSPAlgorithm {
 
     public int getDurationMeeting(String meeting, List<Pair<String, Integer>> infoAboutMeetings) {
         for (Pair<String, Integer> p : infoAboutMeetings) {
-            if (p.getValue0().equals(meeting)) return p.getValue1();
+            if (p.getValue0().equals(meeting)) {
+                return p.getValue1();
+            }
         }
         return 0;
     }
@@ -112,12 +116,13 @@ public class CSPAlgorithm {
 //        }
 //        return null;
 //    }
-
     public String getMeeting(String team, HashMap<Pair<String, String>, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> solution) {
 
         for (Map.Entry<Pair<String, String>, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> entry : solution.entrySet()) {
             if (entry.getKey().getValue0().equals(team)) {
-                if (!isMeetingAssigned(solution, team, entry.getKey().getValue1())) return entry.getKey().getValue1();
+                if (!isMeetingAssigned(solution, team, entry.getKey().getValue1())) {
+                    return entry.getKey().getValue1();
+                }
             }
         }
 
@@ -125,14 +130,15 @@ public class CSPAlgorithm {
     }
 
     public Boolean isMeetingAssigned(HashMap<Pair<String, String>, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> solution,
-                                     String team, String meeting) {
+            String team, String meeting) {
 
         HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>> hm = solution.get(new Pair<>(team, meeting));
 
         for (Map.Entry<String, List<Quartet<Integer, Integer, Integer, Integer>>> entry : hm.entrySet()) {
-            if (entry.getValue().size() != 0) return true;
+            if (entry.getValue().size() != 0) {
+                return true;
+            }
         }
-
 
         return false;
     }
@@ -159,8 +165,6 @@ public class CSPAlgorithm {
 //        }
 //        return null; //Dodaces nesto, ali moras proveriti constatints vezane za timove
 //    }
-
-
     public TimeInterval getNextElement(TimeInterval curElement) {
 
         int v0 = curElement.getStartMinute() == 0 ? curElement.getStartHour() : curElement.getStartHour() + 1;
@@ -219,13 +223,12 @@ public class CSPAlgorithm {
     }
 
     public Pair<DayOfWeek, TimeInterval> isConsistentAssignment(Pair<String, String> teamAndMeeting, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
-                                                                Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                                                Map<String, Set<String>> teamConstraint) {
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+            Map<String, Set<String>> teamConstraint) {
 
         Set<String> teamConstraintList = teamConstraint.get(teamAndMeeting.getValue0());
 //        teamConstraintList.add(teamAndMeeting.getValue0());
         //if (teamConstraintList == null) return null;
-
 
         for (Pair<String, String> teamAndMeetingForCompare : generateAllVariables(teamConstraintList)) {
             Pair<DayOfWeek, List<TimeInterval>> timeAndDayConstraint = solution.get(teamAndMeetingForCompare);
@@ -267,7 +270,7 @@ public class CSPAlgorithm {
     }
 
     public void removeEveryDayAndTimeInterval(Set<String> listOfConstrainedTeams, Pair<DayOfWeek, List<TimeInterval>> timeAndDay,
-                                              Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain) {
         for (String constrainedTeam : listOfConstrainedTeams) {
             for (Map.Entry<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> entry : domain.entrySet()) {
                 if (entry.getKey().getValue0().equals(constrainedTeam)) {
@@ -284,13 +287,13 @@ public class CSPAlgorithm {
 
     }
 
-
     public Boolean backtracking(Map<String, Set<String>> teamConstraint,
-                                List<Pair<String, Integer>> infoAboutMeetings,
-                                Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
-        if (complete(solution))
+            List<Pair<String, Integer>> infoAboutMeetings,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) throws InterruptedException {
+        if (complete(solution)) {
             return true;
+        }
 
         Pair<String, String> teamAndMeeting = getMostConstrainedVariable(domains, teamConstraint);
         String team = teamAndMeeting.getValue0();
@@ -305,13 +308,16 @@ public class CSPAlgorithm {
 
                 solution.put(teamAndMeeting, timeAndDay);
                 Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
+                semaphore.acquire();
 //                newDomains.get(teamAndMeeting).put(timeAndDay.getValue0(), timeAndDay.getValue1());
 
-                if (backtracking(teamConstraint, infoAboutMeetings, solution, newDomains))
+                if (backtracking(teamConstraint, infoAboutMeetings, solution, newDomains)) {
                     return true;
+                }
 
                 solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
                 domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
+                semaphore.acquire();
             } else {
                 domain.get(overlappedTeamTimeInterval.getValue0()).remove(overlappedTeamTimeInterval.getValue1());
             }
@@ -322,13 +328,13 @@ public class CSPAlgorithm {
 
     }
 
-
     public Boolean fcBacktracking(Map<String, Set<String>> teamConstraint,
-                                  List<Pair<String, Integer>> infoAboutMeetings,
-                                  Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                  Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
-        if (complete(solution))
+            List<Pair<String, Integer>> infoAboutMeetings,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
+        if (complete(solution)) {
             return true;
+        }
 
         Pair<String, String> teamAndMeeting = getMostConstrainedVariable(domains, teamConstraint);
         String team = teamAndMeeting.getValue0();
@@ -345,9 +351,9 @@ public class CSPAlgorithm {
                 Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> newDomains = deepCopy(domains);
                 removeEveryDayAndTimeInterval(teamConstraint.get(teamAndMeeting.getValue0()), timeAndDay, newDomains);
 
-
-                if (fcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains))
+                if (fcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains)) {
                     return true;
+                }
 
                 solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
                 domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
@@ -362,11 +368,12 @@ public class CSPAlgorithm {
     }
 
     public Boolean arcBacktracking(Map<String, Set<String>> teamConstraint,
-                                   List<Pair<String, Integer>> infoAboutMeetings,
-                                   Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
-                                   Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
-        if (complete(solution))
+            List<Pair<String, Integer>> infoAboutMeetings,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains) {
+        if (complete(solution)) {
             return true;
+        }
 
         Pair<String, String> teamAndMeeting = getMostConstrainedVariable(domains, teamConstraint);
         String team = teamAndMeeting.getValue0();
@@ -390,8 +397,9 @@ public class CSPAlgorithm {
                     continue;
                 }
 
-                if (arcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains))
+                if (arcBacktracking(teamConstraint, infoAboutMeetings, solution, newDomains)) {
                     return true;
+                }
 
                 solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
                 domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
@@ -411,8 +419,9 @@ public class CSPAlgorithm {
 
         for (String team : listOfTeams) {
             for (String meeting : fp.getMeetings()) {
-                if (team.equals(teamAndMeeting.getValue0()) && meeting.equals(teamAndMeeting.getValue1()))
+                if (team.equals(teamAndMeeting.getValue0()) && meeting.equals(teamAndMeeting.getValue1())) {
                     continue;
+                }
                 Pair<String, String> newTeamAndMeeting = new Pair<>(team, meeting);
                 if (!domains.containsKey(newTeamAndMeeting)) {
                     continue;
@@ -420,14 +429,15 @@ public class CSPAlgorithm {
                 Map<DayOfWeek, List<TimeInterval>> domain = deepCopyForMap(domains.get(newTeamAndMeeting));
                 Pair<DayOfWeek, List<TimeInterval>> timeAndDay = getContinuousIntervals(domain, getDurationMeeting(meeting, infoAboutMeetings) / FileParser.INTERVAL);
 
-                if (timeAndDay == null)
+                if (timeAndDay == null) {
                     return false;
-                else {
+                } else {
                     Set<String> listOfConstrainedTeams = teamConstraints.get(team);
                     for (String constrainedTeam : listOfConstrainedTeams) {
                         for (String constrainedMeeting : fp.getMeetings()) {
-                            if ((constrainedTeam.equals(team) && constrainedMeeting.equals(meeting)) || (constrainedTeam.equals(teamAndMeeting.getValue0()) && constrainedMeeting.equals(teamAndMeeting.getValue1())))
+                            if ((constrainedTeam.equals(team) && constrainedMeeting.equals(meeting)) || (constrainedTeam.equals(teamAndMeeting.getValue0()) && constrainedMeeting.equals(teamAndMeeting.getValue1()))) {
                                 continue;
+                            }
                             Pair<String, String> newConstrainedTeamAndMeeting = new Pair<>(constrainedTeam, constrainedMeeting);
                             //treba li i ovde kopija domena??
                             if (!domains.containsKey(newConstrainedTeamAndMeeting)) {
@@ -439,8 +449,9 @@ public class CSPAlgorithm {
                                     newDomain.get(timeAndDay.getValue0()).remove(interval);
                                 }
                             }
-                            if (getContinuousIntervals(newDomain, getDurationMeeting(constrainedMeeting, infoAboutMeetings) / FileParser.INTERVAL) == null)
+                            if (getContinuousIntervals(newDomain, getDurationMeeting(constrainedMeeting, infoAboutMeetings) / FileParser.INTERVAL) == null) {
                                 return false;
+                            }
 
                         }
                     }
@@ -450,9 +461,7 @@ public class CSPAlgorithm {
         }
 
         //return true;
-
         return true;
     }
-
 
 }

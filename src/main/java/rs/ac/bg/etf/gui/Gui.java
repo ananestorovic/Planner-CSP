@@ -15,8 +15,10 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
+import rs.ac.bg.etf.DayOfWeek;
+import rs.ac.bg.etf.PlannerCSP;
+import rs.ac.bg.etf.TimeInterval;
 
 /**
  *
@@ -43,22 +48,23 @@ public class Gui extends javax.swing.JFrame implements GuiController {
      * Creates new form Gui
      */
     public Gui() {
-        List<Quartet<Integer, Integer, Integer, Integer>> freeSlotsList = new ArrayList<>();
-        freeSlotsList.add(new Quartet<>(9, 00, 14, 30));
-        freeSlotsList.add(new Quartet<>(16, 00, 17, 00));
-
-        for (String oneDay : DAYS_OF_WEEK) {
-            daysOfWeek.put(oneDay, new ArrayList<>(freeSlotsList));
-        }
-        List<String> teamNames = new ArrayList<>();
-        teamNames.add("teamOne");
-        teamNames.add("teamTwo");
-        teamNames.add("teamThree");
-        teamNames.add("teamFour");
+//        List<Quartet<Integer, Integer, Integer, Integer>> freeSlotsList = new ArrayList<>();
+//        freeSlotsList.add(new Quartet<>(9, 00, 14, 30));
+//        freeSlotsList.add(new Quartet<>(16, 00, 17, 00));
+//
+//        for (String oneDay : DAYS_OF_WEEK) {
+//            daysOfWeek.put(oneDay, new ArrayList<>(freeSlotsList));
+//        }
+//        List<String> teamNames = new ArrayList<>();
+//        teamNames.add("teamOne");
+//        teamNames.add("teamTwo");
+//        teamNames.add("teamThree");
+//        teamNames.add("teamFour");
 
         initComponents();
 
-        initTeamTables(teamNames, freeSlotsList);
+//        initTeamTables(teamNames, freeSlotsList, solution);
+        setVisible(true);
     }
 
     /**
@@ -366,17 +372,26 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Gui().setVisible(true);
-
+                GuiController guiController = new Gui();
+                guiController.setListener(new PlannerCSP(guiController));
             }
         });
     }
 
-    private List<Pair<LocalTime, LocalTime>> makeTerminsList(List<Quartet<Integer, Integer, Integer, Integer>> listWithQuartets) {
-        List<Pair<LocalTime, LocalTime>> helpList = new ArrayList<>();
-        listWithQuartets.forEach(e -> {
-            helpList.add(makeInterval(e.getValue0(), e.getValue1(), e.getValue2(), e.getValue3()));
+    private Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> makeTerminsList(String teamName, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> listWithQuartets) {
+        Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> helpList = new HashMap<>();
+        listWithQuartets.entrySet().stream().filter(entry -> entry.getKey().getValue0().equals(teamName)).map(entry -> entry.getValue()).forEach(oneDayMap -> {
+
+            oneDayMap.forEach((day, termins) -> {
+                helpList.computeIfAbsent(day, entry -> new HashSet<>()).addAll(termins.stream().map(termin -> {
+                    return makeInterval(termin.getStartHour(), termin.getStartMinute(), termin.getEndHour(), termin.getEndMinute());
+                }).collect(Collectors.toList()));
+            });
+
         });
+//        listWithQuartets.forEach(e -> {
+//            helpList.add());
+//        });
         return helpList;
     }
 
@@ -387,7 +402,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     }
 
     @Override
-    public void initTeamTables(List<String> teamNames, List<Quartet<Integer, Integer, Integer, Integer>> freeSloots) {
+    public void initTeamTables(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
         teamsData = getTeamDataList(teamNames, freeSloots);
         JTable[] teamTables = new JTable[]{teamATable, teamBTable, teamCTable, teamDTable};
         JLabel[] teamNamesLabel = new JLabel[]{teamAName, teamBName, teamCName, teamDName};
@@ -398,12 +413,12 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         }
     }
 
-    private List<TeamData> getTeamDataList(List<String> teamNames, List<Quartet<Integer, Integer, Integer, Integer>> freeSloots) {
+    private List<TeamData> getTeamDataList(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots) {
         List<TeamData> tempTeamList = new ArrayList<>();
         for (String teamName : teamNames) {
             TeamData teamData = new TeamData();
             teamData.setTeamName(teamName);
-            teamData.setFreeList(makeTerminsList(freeSloots));
+            teamData.setFreeList(makeTerminsList(teamName, freeSloots));
             teamData.setMeetings(new HashMap<>());
             tempTeamList.add(teamData);
         }
@@ -411,8 +426,39 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     }
 
     @Override
-    public void refreshGui(HashMap<String, HashMap<String, List<Quartet<Integer, Integer, Integer, Integer>>>> teamData, HashMap<String, List<Pair<String, Boolean>>> meetings) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
+        JTable[] teamTables = new JTable[]{teamATable, teamBTable, teamCTable, teamDTable};
+        Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> meetings = makeMeetings(solution);
+        for (int i = 0; i < teamsData.size(); i++) {
+            TeamData teamData = teamsData.get(i);
+            teamData.setFreeList(makeTerminsList(teamData.getTeamName(), freeSloots));
+            teamData.setMeetings(meetings.get(teamData.getTeamName()));
+            teamTables[i].repaint();
+        }
+
+    }
+
+    private Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> makeMeetings(Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
+        Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> retVal = new HashMap<>();
+
+        solution.entrySet().forEach(teamMeetingToDayAndTime -> {
+
+            Pair<String, String> teamAndMeeting = teamMeetingToDayAndTime.getKey();
+            String team = teamAndMeeting.getValue0();
+            String meeting = teamAndMeeting.getValue1();
+
+            Pair<DayOfWeek, List<TimeInterval>> dayAndTermins = teamMeetingToDayAndTime.getValue();
+            DayOfWeek dayOfWeek = dayAndTermins.getValue0();
+            List<TimeInterval> termins = dayAndTermins.getValue1();
+
+            Map<String, Set<Pair<LocalTime, LocalTime>>> meetingNameToTimeMap = new HashMap<>();
+
+            Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> oneTeamMeetings = retVal.computeIfAbsent(team, key -> new HashMap<>());
+
+            oneTeamMeetings.computeIfAbsent(dayOfWeek, key -> new HashMap<>()).put(meeting,
+                    termins.stream().map(oneTerminInterval -> makeInterval(oneTerminInterval.getStartHour(), oneTerminInterval.getStartMinute(), oneTerminInterval.getEndHour(), oneTerminInterval.getEndMinute())).collect(Collectors.toSet()));
+        });
+        return retVal;
     }
 
     public void registerListener(GuiListener guiListener) {
@@ -474,56 +520,92 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             col -= 1;
 
             String dayOfWeek = DAYS_OF_WEEK[col];
-            List<Pair<LocalTime, LocalTime>> freeList = teamData.getFreeList();
-            if (freeList == null) {
+            Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> dayToFreeListMapping = teamData.getFreeList();
+            Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> dayToMeeting = teamData.getMeetings();
+
+            if (dayToFreeListMapping == null) {
                 return labelCell;
             }
 
-            LocalTime currentRowTime = times[row];
-            boolean isFree = freeList.stream().anyMatch(onePair -> {
-                LocalTime startTime = onePair.getValue0();
-                LocalTime endTime = onePair.getValue1();
-                if (currentRowTime.compareTo(startTime) >= 0 && currentRowTime.compareTo(endTime) < 0) {
-                    return true;
-                }
-                return false;
+            enum CellType {
+                FREE, TAKEN, MEETING
+            }
+            CellType cellType = CellType.TAKEN;
 
-            });
-            //Get the status for the current row.
+            if (dayToFreeListMapping.containsKey(DayOfWeek.fromString(dayOfWeek))) {
+                LocalTime currentRowTime = times[row];
+                boolean isFree = dayToFreeListMapping.get(DayOfWeek.fromString(dayOfWeek)).stream().anyMatch(onePair -> {
+                    LocalTime startTime = onePair.getValue0();
+                    LocalTime endTime = onePair.getValue1();
+                    return currentRowTime.compareTo(startTime) >= 0 && currentRowTime.compareTo(endTime) < 0;
+
+                });
+                if (isFree) {
+                    cellType = CellType.FREE;
+                }
+            }
+            String meetingName = "";
+            Map<String, Set<Pair<LocalTime, LocalTime>>> metingsToTermins = dayToMeeting.get(DayOfWeek.fromString(dayOfWeek));
+            if (metingsToTermins != null) {
+                LocalTime currentRowTime = times[row];
+                boolean isMeeting = false;
+                for (Map.Entry<String, Set<Pair<LocalTime, LocalTime>>> meetingToTermins : metingsToTermins.entrySet()) {
+                    isMeeting = meetingToTermins.getValue().stream().anyMatch(onePair -> {
+                        LocalTime startTime = onePair.getValue0();
+                        LocalTime endTime = onePair.getValue1();
+                        return currentRowTime.compareTo(startTime) >= 0 && currentRowTime.compareTo(endTime) < 0;
+                    });
+                    meetingName = meetingToTermins.getKey();
+                }
+
+                if (isMeeting) {
+                    cellType = CellType.MEETING;
+                }
+            }
+
             Border border = BorderFactory.createLineBorder(Color.decode(GREY_COLOR_HEX_CODE), 1);
             labelCell.setBorder(border);
 
-            if (isFree) {
-                labelCell.setBackground(Color.GREEN);
-            } else {
-                labelCell.setBackground(Color.RED);
+            switch (cellType) {
+                case TAKEN -> labelCell.setBackground(Color.RED);
+                case FREE -> labelCell.setBackground(Color.GREEN);
+                case MEETING -> {
+                    labelCell.setBackground(Color.CYAN);
+                    labelCell.setText(meetingName);
+                }
+                default -> throw new AssertionError();
             }
+
             return labelCell;
 
         }
     }
 
+    @Override
+    public void setListener(GuiListener guiListener) {
+        this.guiListener = guiListener;
+    }
+
     private List<TeamData> teamsData = new ArrayList<>();
 
+    private GuiListener guiListener;
     private final Object[][] WORK_TIMES_IN_DAY = new Object[][]{
-        {"09:00"},
-        {"09:30"},
-        {"10:00"},
-        {"10:30"},
-        {"11:00"},
-        {"11:30"},
-        {"12:00"},
-        {"12:30"},
-        {"13:00"},
-        {"13:30"},
-        {"14:00"},
-        {"14:30"},
-        {"15:00"},
-        {"15:30"},
-        {"16:00"},
-        {"16:30"},
-        {"17:00"}
-    };
+        {"09:00-09:30"},
+        {"09:30-10:00"},
+        {"10:00-10:30"},
+        {"10:30-11:00"},
+        {"11:00-11:30"},
+        {"11:30-12:00"},
+        {"12:00-12:30"},
+        {"12:30-13:00"},
+        {"13:00-13:30"},
+        {"13:30-14:00"},
+        {"14:00-14:30"},
+        {"14:30-15:00"},
+        {"15:00:15:30"},
+        {"15:30-16:00"},
+        {"16:00-16:30"},
+        {"16:30-17:00"},};
 
     private String[] TABE_HEADER = new String[]{
         "", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"
@@ -535,8 +617,6 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             table.getColumnModel().getColumn(col).setCellRenderer(new StatusColumnCellRenderer(teamsData));
         }
     }
-
-    private GuiListener guiListener;
 
     private LocalTime[] times = new LocalTime[]{
         LocalTime.of(9, 0, 0, 0),
@@ -554,7 +634,5 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         LocalTime.of(15, 00, 0, 0),
         LocalTime.of(15, 3, 0, 0),
         LocalTime.of(16, 00, 0, 0),
-        LocalTime.of(16, 30, 0, 0),
-        LocalTime.of(17, 00, 0, 0),};
-
+        LocalTime.of(16, 30, 0, 0),};
 }

@@ -29,7 +29,6 @@ public class FileParser {
     //limitation: the duration of meetings is equal 30 min * n
     static final int INTERVAL = 30;
 
-
     private Map<String, Map<DayOfWeek, List<TimeInterval>>> unavailable;
     private Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> available;
     private List<Pair<String, Integer>> infoAboutMeetings;
@@ -43,7 +42,6 @@ public class FileParser {
     private List<String> teams;
 
     private List<String> meetings;
-
 
     public FileParser() {
 
@@ -83,13 +81,29 @@ public class FileParser {
                 eMins = 0;
             }
             allTimeIntervals.add(element);
-            if (element.getEndHour() == END_HOURS && element.getEndMinute() == END_MINS) break;
+            if (element.getEndHour() == END_HOURS && element.getEndMinute() == END_MINS) {
+                break;
+            }
         }
     }
 
-
     public Map<String, Map<DayOfWeek, List<TimeInterval>>> getUnavailable() {
         return unavailable;
+    }
+
+    public Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> getallVarsTermin() {
+        Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> allVarsTermin = new HashMap<>();
+        for (String teamName : teams) {
+            for (String meetingName : meetings) {
+                Pair<String, String> teamAndMeeting = (new Pair<>(teamName, meetingName));
+                Map<DayOfWeek, List<TimeInterval>> oneVarTermins = new HashMap<>();
+                for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+                    oneVarTermins.put(dayOfWeek, new ArrayList<>(allTimeIntervals));
+                }
+                allVarsTermin.put(teamAndMeeting, oneVarTermins);
+            }
+        }
+        return allVarsTermin;
     }
 
     public List<Pair<String, Integer>> getInfoAboutMeetings() {
@@ -108,6 +122,10 @@ public class FileParser {
         return meetings;
     }
 
+    public List<String> getTeams() {
+        return teams;
+    }
+
     public List<TimeInterval> getAllTimeIntervals() {
         return allTimeIntervals;
     }
@@ -116,7 +134,7 @@ public class FileParser {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -129,7 +147,6 @@ public class FileParser {
             e.printStackTrace();
         }
     }
-
 
     private void processTeamObject(JSONObject team) {
         //Get team object within list
@@ -168,12 +185,11 @@ public class FileParser {
         return daysWithHoursOff;
     }
 
-
     public void parseRequestsFile(String fileName) {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -214,7 +230,7 @@ public class FileParser {
         //JSON parser object to parse read file
         JSONParser jsonParser = new JSONParser();
 
-        try (FileReader reader = new FileReader(fileName)) {
+        try ( FileReader reader = new FileReader(fileName)) {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
 
@@ -244,15 +260,13 @@ public class FileParser {
 
     public void generateTeamConstraint() {
 
-        employee.forEach((teamNameOne, employeeIdsOne) ->
-
-                employee.forEach((teamNameTwo, employeesIdTwo) -> {
+        employee.forEach((teamNameOne, employeeIdsOne)
+                -> employee.forEach((teamNameTwo, employeesIdTwo) -> {
 
                     if (employeeIdsOne.stream().anyMatch(employeesIdTwo::contains)) {
                         teamConstraint.get(teamNameOne).add(teamNameTwo);
                     }
                 })
-
         );
     }
 
@@ -358,7 +372,6 @@ public class FileParser {
         return interval.getStartHour() > requestInterval.getStartHour() || (interval.getStartHour() == requestInterval.getStartHour() && interval.getStartMinute() >= requestInterval.getStartMinute());
     }
 
-
     public Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> generateDomain() {
         Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domain = new HashMap<>();
         for (String team : teams) {
@@ -394,6 +407,5 @@ public class FileParser {
             System.out.println(teamAndMeeting.getValue0() + " " + teamAndMeeting.getValue1() + " " + solution.get(teamAndMeeting).getValue0() + " " + solution.get(teamAndMeeting).getValue1());
         }
     }
-
 
 }

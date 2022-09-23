@@ -8,8 +8,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
+import rs.ac.bg.etf.DayOfWeek;
 
 /**
  *
@@ -18,14 +21,14 @@ import org.javatuples.Quartet;
 public class TeamData {
 
     private String teamName;
-    private List<Pair<LocalTime, LocalTime>> freeList;
-    private HashMap<String, Pair<Quartet<Integer, Integer, Integer, Integer>, Quartet<Integer, Integer, Integer, Integer>>> meetings;
+    private Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> freeList;
+    private Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> meetings;
 
-    public void setFreeList(List<Pair<LocalTime, LocalTime>> freeList) {
+    public void setFreeList(Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> freeList) {
         this.freeList = freeList;
     }
 
-    public void setMeetings(HashMap<String, Pair<Quartet<Integer, Integer, Integer, Integer>, Quartet<Integer, Integer, Integer, Integer>>> meetings) {
+    public void setMeetings(Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> meetings) {
         this.meetings = meetings;
     }
 
@@ -33,11 +36,11 @@ public class TeamData {
         this.teamName = teamName;
     }
 
-    public List<Pair<LocalTime, LocalTime>> getFreeList() {
+    public Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> getFreeList() {
         return freeList;
     }
 
-    public HashMap<String, Pair<Quartet<Integer, Integer, Integer, Integer>, Quartet<Integer, Integer, Integer, Integer>>> getMeetings() {
+    public Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> getMeetings() {
         return meetings;
     }
 
