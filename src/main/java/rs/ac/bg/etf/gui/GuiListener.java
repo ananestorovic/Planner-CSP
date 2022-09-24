@@ -12,10 +12,12 @@ import enums.CspAlgorithmType;
  */
 public interface GuiListener {
 
-    public void startSimulation(CspAlgorithmType cspAlgorithmType);
+    public void startSimulation(CspAlgorithmType cspAlgorithmType, String teams, String meetings, String timeOff);
     
     public void stopSimulation();
 
     public void nextStep();
+
+    public void runAlgorithmToEnd();
     
 }

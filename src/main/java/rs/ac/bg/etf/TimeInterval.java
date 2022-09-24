@@ -1,8 +1,10 @@
 package rs.ac.bg.etf;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
-public class TimeInterval {
+public class TimeInterval{
 
     private int startHour;
     private int startMinute;
@@ -71,4 +73,18 @@ public class TimeInterval {
                 ":" + endMinute +
                 ']';
     }
+
+//    @Override
+//    public int compareTo(TimeInterval another) {
+//        LocalTime anotherTimeStart = LocalTime.of(another.startHour, another.startMinute, 0);
+//        LocalTime anotherTimeEnd = LocalTime.of(another.endHour, another.endMinute, 0);
+//        LocalTime currentTimeStart = LocalTime.of(startHour, startMinute, 0);
+//        LocalTime currentTimeEnd = LocalTime.of(endHour, endMinute, 0);
+//
+//        int retVal =   currentTimeStart.compareTo(anotherTimeStart);
+//        if (retVal == 0){
+//            retVal = currentTimeEnd.compareTo(anotherTimeEnd);
+//        }
+//        return retVal;
+//    }
 }

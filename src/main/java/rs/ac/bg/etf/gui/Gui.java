@@ -10,6 +10,7 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -42,28 +44,11 @@ import rs.ac.bg.etf.TimeInterval;
  */
 public class Gui extends javax.swing.JFrame implements GuiController {
 
-    Map<String, List<Quartet<Integer, Integer, Integer, Integer>>> daysOfWeek = new HashMap<>();
-
     /**
      * Creates new form Gui
      */
     public Gui() {
-//        List<Quartet<Integer, Integer, Integer, Integer>> freeSlotsList = new ArrayList<>();
-//        freeSlotsList.add(new Quartet<>(9, 00, 14, 30));
-//        freeSlotsList.add(new Quartet<>(16, 00, 17, 00));
-//
-//        for (String oneDay : DAYS_OF_WEEK) {
-//            daysOfWeek.put(oneDay, new ArrayList<>(freeSlotsList));
-//        }
-//        List<String> teamNames = new ArrayList<>();
-//        teamNames.add("teamOne");
-//        teamNames.add("teamTwo");
-//        teamNames.add("teamThree");
-//        teamNames.add("teamFour");
-
         initComponents();
-
-//        initTeamTables(teamNames, freeSlotsList, solution);
         setVisible(true);
     }
 
@@ -77,6 +62,10 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        chooseMeetingsFile = new javax.swing.JFileChooser();
+        chooseMeetingsFile.setCurrentDirectory(getWorkingDirectory());
+        chooseTeamsFile = new javax.swing.JFileChooser();
+        chooseTimeOffFike = new javax.swing.JFileChooser();
         mainPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
@@ -85,7 +74,14 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         basicCsp = new javax.swing.JRadioButton();
         forwardChecking = new javax.swing.JRadioButton();
         arcConsistencyWithFC = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
         startSimulation = new javax.swing.JButton();
+        jPanel11 = new javax.swing.JPanel();
+        chooseMeetings = new javax.swing.JButton();
+        chooseTeams = new javax.swing.JButton();
+        chooseTeamsFile.setCurrentDirectory(getWorkingDirectory());
+        chooseRequests = new javax.swing.JButton();
+        chooseTimeOffFike.setCurrentDirectory(getWorkingDirectory());
         jPanel7 = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -107,6 +103,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel3 = new javax.swing.JPanel();
         nextStep = new javax.swing.JButton();
         goToStartPage = new javax.swing.JButton();
+        runToEnd = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(500, 500));
@@ -123,8 +120,14 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel4.setLayout(new java.awt.GridLayout(0, 1));
 
         buttonGroup1.add(basicCsp);
-        basicCsp.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        basicCsp.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
+        basicCsp.setSelected(true);
         basicCsp.setText("Basic CSP");
+        basicCsp.setAlignmentY(0.0F);
+        basicCsp.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        basicCsp.setHideActionText(true);
+        basicCsp.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        basicCsp.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         basicCsp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 basicCspActionPerformed(evt);
@@ -133,16 +136,19 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel4.add(basicCsp);
 
         buttonGroup1.add(forwardChecking);
-        forwardChecking.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        forwardChecking.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
         forwardChecking.setText("Forward checking");
+        forwardChecking.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         jPanel4.add(forwardChecking);
 
         buttonGroup1.add(arcConsistencyWithFC);
-        arcConsistencyWithFC.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        arcConsistencyWithFC.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
         arcConsistencyWithFC.setText("Arc consistency with forward checking");
         arcConsistencyWithFC.setAlignmentX(1.0F);
         arcConsistencyWithFC.setAlignmentY(1.0F);
         arcConsistencyWithFC.setAutoscrolls(true);
+        arcConsistencyWithFC.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        arcConsistencyWithFC.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         arcConsistencyWithFC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 arcConsistencyWithFCActionPerformed(evt);
@@ -152,30 +158,95 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
         JPanel2.add(jPanel4, java.awt.BorderLayout.LINE_START);
 
-        startSimulation.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Calibri", 1, 36)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("CSP MEETING PLANNER");
+
+        startSimulation.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
         startSimulation.setText("Start simulation");
+        startSimulation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         startSimulation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startSimulationActionPerformed(evt);
             }
         });
-        JPanel2.add(startSimulation, java.awt.BorderLayout.PAGE_END);
+
+        chooseMeetings.setText("Choose meetings");
+        chooseMeetings.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseMeetingsActionPerformed(evt);
+            }
+        });
+
+        chooseTeams.setText("Choose teams");
+        chooseTeams.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseTeamsActionPerformed(evt);
+            }
+        });
+
+        chooseRequests.setText("Choose requests");
+        chooseRequests.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chooseRequestsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(chooseMeetings, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                    .addComponent(chooseTeams, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(chooseRequests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(17, 17, 17))
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(chooseMeetings, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
+                .addComponent(chooseTeams, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
+                .addComponent(chooseRequests, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
         jPanel9.setLayout(jPanel9Layout);
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(250, 250, 250)
-                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(282, 282, 282)
+                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(startSimulation, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel9Layout.createSequentialGroup()
+                                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(80, 80, 80)
+                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(39, 39, 39)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1068, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGap(194, 194, 194)
-                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(121, Short.MAX_VALUE))
+                .addGap(31, 31, 31)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
+                .addComponent(startSimulation)
+                .addContainerGap(133, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel9, java.awt.BorderLayout.CENTER);
@@ -261,7 +332,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel7.add(jPanel8, java.awt.BorderLayout.PAGE_START);
         jPanel8.getAccessibleContext().setAccessibleDescription("");
 
-        jPanel3.setLayout(new java.awt.GridLayout());
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
 
         nextStep.setText("Next step");
         nextStep.addActionListener(new java.awt.event.ActionListener() {
@@ -279,6 +350,14 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         });
         jPanel3.add(goToStartPage);
 
+        runToEnd.setText("Run to end");
+        runToEnd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runToEndActionPerformed(evt);
+            }
+        });
+        jPanel3.add(runToEnd);
+
         jPanel7.add(jPanel3, java.awt.BorderLayout.CENTER);
 
         mainPanel.add(jPanel7, "card3");
@@ -288,9 +367,9 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 6, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 4, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -317,28 +396,6 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         return retVal;
     }
 
-    private void startSimulationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimulationActionPerformed
-        CspAlgorithmType cspAlgorithmType = getCspAlgorithmTypeUsingRadioButtons();
-        if (cspAlgorithmType != null) {
-
-            if (guiListener != null) {
-                guiListener.startSimulation(cspAlgorithmType);
-            }
-            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-            cardLayout.next(mainPanel);
-        } else {
-            JOptionPane.showMessageDialog(this, "You need to select one option", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_startSimulationActionPerformed
-
-    private void arcConsistencyWithFCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arcConsistencyWithFCActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_arcConsistencyWithFCActionPerformed
-
-    private void basicCspActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_basicCspActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_basicCspActionPerformed
-
     private void nextStepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextStepActionPerformed
         if (guiListener != null) {
             guiListener.nextStep();
@@ -352,6 +409,67 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.previous(mainPanel);
     }//GEN-LAST:event_goToStartPageActionPerformed
+
+    private String getChoosenFilePath(JFileChooser fileChooser) {
+        String selectedFilePath = null;
+        File selectedFile = fileChooser.getSelectedFile();
+        if (selectedFile != null) {
+            selectedFilePath = selectedFile.getAbsolutePath();
+        }
+        return selectedFilePath;
+
+    }
+    private void startSimulationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimulationActionPerformed
+        CspAlgorithmType cspAlgorithmType = getCspAlgorithmTypeUsingRadioButtons();
+        if (cspAlgorithmType != null) {
+
+            if (guiListener != null) {
+                guiListener.startSimulation(cspAlgorithmType, getChoosenFilePath(chooseTeamsFile), getChoosenFilePath(chooseMeetingsFile), getChoosenFilePath(chooseTimeOffFike));
+            }
+            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+            nextStep.setEnabled(true);
+            runToEnd.setEnabled(true);
+            cardLayout.next(mainPanel);
+        } else {
+            JOptionPane.showMessageDialog(this, "You need to select one option", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_startSimulationActionPerformed
+
+    private File getWorkingDirectory() {
+        return new File(System.getProperty("user.dir"));
+    }
+
+    private String showUserSelectFileDialog(JFileChooser fileChooser) {
+        int result = fileChooser.showOpenDialog(this);
+        if (JFileChooser.APPROVE_OPTION != result) {
+            JOptionPane.showMessageDialog(this, "File not selectedl, default will be used", "info", JOptionPane.INFORMATION_MESSAGE);
+            return "";
+        }
+        String path = fileChooser.getSelectedFile().getAbsolutePath();
+        return path;
+    }
+    private void arcConsistencyWithFCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arcConsistencyWithFCActionPerformed
+    }//GEN-LAST:event_arcConsistencyWithFCActionPerformed
+
+    private void basicCspActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_basicCspActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_basicCspActionPerformed
+
+    private void runToEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runToEndActionPerformed
+        guiListener.runAlgorithmToEnd();
+    }//GEN-LAST:event_runToEndActionPerformed
+
+    private void chooseMeetingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseMeetingsActionPerformed
+        showUserSelectFileDialog(chooseMeetingsFile);
+    }//GEN-LAST:event_chooseMeetingsActionPerformed
+
+    private void chooseTeamsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseTeamsActionPerformed
+        showUserSelectFileDialog(chooseTeamsFile);
+    }//GEN-LAST:event_chooseTeamsActionPerformed
+
+    private void chooseRequestsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chooseRequestsActionPerformed
+        showUserSelectFileDialog(chooseTimeOffFike);
+    }//GEN-LAST:event_chooseRequestsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -438,6 +556,19 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
     }
 
+    @Override
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Info", JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
+    @Override
+    public void planningIsFinished() {
+        nextStep.setEnabled(false);
+        runToEnd.setEnabled(false);
+        JOptionPane.showMessageDialog(this, "Algorithm is finished", "Info", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> makeMeetings(Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
         Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> retVal = new HashMap<>();
 
@@ -471,10 +602,18 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     private javax.swing.JRadioButton arcConsistencyWithFC;
     private javax.swing.JRadioButton basicCsp;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton chooseMeetings;
+    private javax.swing.JFileChooser chooseMeetingsFile;
+    private javax.swing.JButton chooseRequests;
+    private javax.swing.JButton chooseTeams;
+    private javax.swing.JFileChooser chooseTeamsFile;
+    private javax.swing.JFileChooser chooseTimeOffFike;
     private javax.swing.JRadioButton forwardChecking;
     private javax.swing.JButton goToStartPage;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -489,6 +628,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JButton nextStep;
+    private javax.swing.JButton runToEnd;
     private javax.swing.JButton startSimulation;
     private javax.swing.JLabel teamAName;
     private javax.swing.JTable teamATable;
@@ -556,24 +696,29 @@ public class Gui extends javax.swing.JFrame implements GuiController {
                         return currentRowTime.compareTo(startTime) >= 0 && currentRowTime.compareTo(endTime) < 0;
                     });
                     meetingName = meetingToTermins.getKey();
+                    if (isMeeting) {
+                        cellType = CellType.MEETING;
+                        break;
+                    }
                 }
 
-                if (isMeeting) {
-                    cellType = CellType.MEETING;
-                }
             }
 
             Border border = BorderFactory.createLineBorder(Color.decode(GREY_COLOR_HEX_CODE), 1);
             labelCell.setBorder(border);
 
             switch (cellType) {
-                case TAKEN -> labelCell.setBackground(Color.RED);
-                case FREE -> labelCell.setBackground(Color.GREEN);
+                case TAKEN ->
+                    labelCell.setBackground(Color.RED);
+                case FREE ->
+                    labelCell.setBackground(Color.GREEN);
                 case MEETING -> {
-                    labelCell.setBackground(Color.CYAN);
+                    labelCell.setBackground(ColorPicker.getColor(meetingName));
+                    labelCell.setForeground(Color.BLACK);
                     labelCell.setText(meetingName);
                 }
-                default -> throw new AssertionError();
+                default ->
+                    throw new AssertionError();
             }
 
             return labelCell;
@@ -632,7 +777,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         LocalTime.of(14, 00, 0, 0),
         LocalTime.of(14, 30, 0, 0),
         LocalTime.of(15, 00, 0, 0),
-        LocalTime.of(15, 3, 0, 0),
+        LocalTime.of(15, 30, 0, 0),
         LocalTime.of(16, 00, 0, 0),
         LocalTime.of(16, 30, 0, 0),};
 }

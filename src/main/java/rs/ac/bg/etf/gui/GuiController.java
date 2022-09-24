@@ -4,14 +4,10 @@
  */
 package rs.ac.bg.etf.gui;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.javatuples.Pair;
-import org.javatuples.Quartet;
 import rs.ac.bg.etf.DayOfWeek;
-import rs.ac.bg.etf.PlannerCSP;
 import rs.ac.bg.etf.TimeInterval;
 
 /**
@@ -26,4 +22,7 @@ public interface GuiController {
 
     public void setListener(GuiListener guiListener);
 
+    public void planningIsFinished();
+
+    public void showMessage(String message);
 }

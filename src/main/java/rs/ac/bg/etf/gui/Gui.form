@@ -4,6 +4,15 @@
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
     </Component>
+    <Component class="javax.swing.JFileChooser" name="chooseMeetingsFile">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="chooseMeetingsFile.setCurrentDirectory(getWorkingDirectory());&#xd;&#xa;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JFileChooser" name="chooseTeamsFile">
+    </Component>
+    <Component class="javax.swing.JFileChooser" name="chooseTimeOffFike">
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -31,9 +40,9 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace min="0" pref="6" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               <Component id="mainPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="4" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -74,19 +83,41 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="250" max="-2" attributes="0"/>
-                          <Component id="JPanel2" min="-2" pref="439" max="-2" attributes="0"/>
-                          <EmptySpace pref="250" max="32767" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="-2" pref="282" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="startSimulation" min="-2" pref="632" max="-2" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Component id="JPanel2" min="-2" pref="384" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="80" max="-2" attributes="0"/>
+                                          <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="39" max="-2" attributes="0"/>
+                                  <Component id="jLabel1" min="-2" pref="1068" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace pref="86" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
-                          <EmptySpace min="-2" pref="194" max="-2" attributes="0"/>
-                          <Component id="JPanel2" min="-2" pref="342" max="-2" attributes="0"/>
-                          <EmptySpace pref="121" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+                          <Component id="jLabel1" min="-2" pref="166" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="JPanel2" alignment="0" min="-2" pref="262" max="-2" attributes="0"/>
+                              <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                          <Component id="startSimulation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace pref="133" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -125,9 +156,17 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="12" style="0"/>
+                              <Font name="Calibri" size="18" style="0"/>
                             </Property>
+                            <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" value="Basic CSP"/>
+                            <Property name="alignmentY" type="float" value="0.0"/>
+                            <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
+                              <Color id="Default Cursor"/>
+                            </Property>
+                            <Property name="hideActionText" type="boolean" value="true"/>
+                            <Property name="horizontalTextPosition" type="int" value="4"/>
+                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="basicCspActionPerformed"/>
@@ -139,9 +178,10 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="12" style="0"/>
+                              <Font name="Calibri" size="18" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Forward checking"/>
+                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="arcConsistencyWithFC">
@@ -150,12 +190,14 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="12" style="0"/>
+                              <Font name="Calibri" size="18" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Arc consistency with forward checking"/>
                             <Property name="alignmentX" type="float" value="1.0"/>
                             <Property name="alignmentY" type="float" value="1.0"/>
                             <Property name="autoscrolls" type="boolean" value="true"/>
+                            <Property name="horizontalAlignment" type="int" value="0"/>
+                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="arcConsistencyWithFCActionPerformed"/>
@@ -163,21 +205,89 @@
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Component class="javax.swing.JButton" name="startSimulation">
+                  </SubComponents>
+                </Container>
+                <Component class="javax.swing.JLabel" name="jLabel1">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Calibri" size="36" style="1"/>
+                    </Property>
+                    <Property name="horizontalAlignment" type="int" value="0"/>
+                    <Property name="text" type="java.lang.String" value="CSP MEETING PLANNER"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="startSimulation">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Calibri" size="18" style="1"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Start simulation"/>
+                    <Property name="horizontalTextPosition" type="int" value="0"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startSimulationActionPerformed"/>
+                  </Events>
+                </Component>
+                <Container class="javax.swing.JPanel" name="jPanel11">
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace pref="19" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="chooseMeetings" pref="132" max="32767" attributes="0"/>
+                                  <Component id="chooseTeams" max="32767" attributes="0"/>
+                                  <Component id="chooseRequests" alignment="1" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="chooseMeetings" min="-2" pref="40" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
+                              <Component id="chooseTeams" min="-2" pref="39" max="-2" attributes="0"/>
+                              <EmptySpace pref="59" max="32767" attributes="0"/>
+                              <Component id="chooseRequests" min="-2" pref="39" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="javax.swing.JButton" name="chooseMeetings">
                       <Properties>
-                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Calibri" size="12" style="0"/>
-                        </Property>
-                        <Property name="text" type="java.lang.String" value="Start simulation"/>
+                        <Property name="text" type="java.lang.String" value="Choose meetings"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startSimulationActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chooseMeetingsActionPerformed"/>
                       </Events>
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                          <BorderConstraints direction="Last"/>
-                        </Constraint>
-                      </Constraints>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="chooseTeams">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Choose teams"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chooseTeamsActionPerformed"/>
+                      </Events>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="chooseTeamsFile.setCurrentDirectory(getWorkingDirectory());&#xd;&#xa;"/>
+                      </AuxValues>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="chooseRequests">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Choose requests"/>
+                      </Properties>
+                      <Events>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="chooseRequestsActionPerformed"/>
+                      </Events>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_CreateCodePost" type="java.lang.String" value="chooseTimeOffFike.setCurrentDirectory(getWorkingDirectory());&#xd;&#xa;"/>
+                      </AuxValues>
                     </Component>
                   </SubComponents>
                 </Container>
@@ -424,6 +534,14 @@
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="goToStartPageActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="runToEnd">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Run to end"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="runToEndActionPerformed"/>
                   </Events>
                 </Component>
               </SubComponents>

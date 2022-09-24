@@ -21,19 +21,22 @@ import rs.ac.bg.etf.gui.GuiListener;
  */
 public class PlannerCSP implements GuiListener, Runnable {
 
-    private Semaphore semaphore;
-
-    private GuiController guiController;
+    private final Logger logger = Logger.getLogger(PlannerCSP.class.getName());
+    private final Semaphore semaphore;
+    private final GuiController guiController;
+    private final Object mutex = new Object();
+    private CSPAlgorithm csp;
+    private FileParser fp;
+    private boolean runToEnd;
+    private String teamsFile;
+    private String meetingsFile;
 
     public PlannerCSP(GuiController guiController) {
         this.guiController = guiController;
         this.semaphore = new Semaphore(0);
     }
 
-    private void runCSPAlgoritum(CspAlgorithmType cspAlgorithmType) throws InterruptedException {
-
-        FileParser fp = new FileParser();
-        CSPAlgorithm csp = new CSPAlgorithm(fp, semaphore);
+    private void runCSPAlgoritum() throws InterruptedException {
 
         fp.parseMeetingsFile("resources/meetings.json");
         fp.parseTeamsFile("resources/teams.json");
@@ -47,14 +50,15 @@ public class PlannerCSP implements GuiListener, Runnable {
 
         guiController.initTeamTables(fp.getTeams(), fp.getallVarsTermin(), solution);
         semaphore.acquire();
-
-        guiController.refreshGui(fp.getAvailable(), solution);
-        semaphore.acquire();
-
+        if (!runToEnd) {
+            guiController.refreshGui(fp.getAvailable(), solution);
+            semaphore.acquire();
+        }
         switch (cspAlgorithmType) {
             case BASIC_CSP:
-                csp.fcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
+                csp.backtracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
                         fp.getAvailable());
+                fp.printSolution(solution);
                 break;
             case FC:
                 csp.fcBacktracking(fp.getTeamConstraint(), fp.getInfoAboutMeetings(), solution,
@@ -67,7 +71,13 @@ public class PlannerCSP implements GuiListener, Runnable {
             default:
                 throw new AssertionError();
         }
-
+        if (!csp.complete(solution)){
+            guiController.refreshGui(fp.getAvailable(), solution);
+            guiController.planningIsFinished();
+            guiController.showMessage("There is no solution!");
+        } else {
+            guiController.planningIsFinished();
+        }
     }
 
     private CspAlgorithmType cspAlgorithmType;
@@ -76,29 +86,64 @@ public class PlannerCSP implements GuiListener, Runnable {
     @Override
     public void run() {
         try {
-            runCSPAlgoritum(cspAlgorithmType);
+            runCSPAlgoritum();
         } catch (InterruptedException ex) {
-            Logger.getLogger(PlannerCSP.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.INFO, "Thread for running csp algorithm is interrupted");
         }
     }
 
     @Override
-    public void startSimulation(CspAlgorithmType cspAlgorithmType) {
+    public void runAlgorithmToEnd() {
+        semaphore.release();
+        this.runToEnd = true;
+        csp.setRunToEnd(true);
+    }
+
+    @Override
+    public void startSimulation(CspAlgorithmType cspAlgorithmType, String teamsFile, String meetngsFile, String timeOffFile) {
         this.cspAlgorithmType = cspAlgorithmType;
+        setTeamsFile(teamsFile);
+        setMeetingsFile(meetngsFile);
+        setTimeOffFile(timeOffFile);
+
+        this.fp = new FileParser();
+        this.csp = new CSPAlgorithm(fp, semaphore, guiController);
         this.thread = new Thread(this);
         this.thread.start();
-
     }
 
     @Override
     public void stopSimulation() {
         this.thread.interrupt();
-
     }
 
     @Override
     public void nextStep() {
         semaphore.release();
 
+    }
+
+    private void setTeamsFile(String teamsFile) {
+        if (teamsFile != null) {
+            this.teamsFile = teamsFile;
+        } else {
+            this.teamsFile = "resources/meetings.json";
+        }
+    }
+
+    private void setMeetingsFile(String meetngsFile) {
+        if (meetngsFile != null) {
+            this.meetingsFile = teamsFile;
+        } else {
+            this.meetingsFile = "resources/teams.json";
+        }
+    }
+
+    private void setTimeOffFile(String timeOffFile) {
+        if (timeOffFile != null) {
+            this.meetingsFile = teamsFile;
+        } else {
+            this.meetingsFile = "resources/requests.json";
+        }
     }
 }
