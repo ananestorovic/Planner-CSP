@@ -75,7 +75,7 @@
             <Container class="javax.swing.JPanel" name="jPanel9">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                  <BorderConstraints direction="Center"/>
+                  <BorderConstraints direction="First"/>
                 </Constraint>
               </Constraints>
 
@@ -83,25 +83,18 @@
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
-                                  <Component id="jLabel1" min="-2" pref="1068" max="-2" attributes="0"/>
-                              </Group>
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="233" max="-2" attributes="0"/>
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="startSimulation" min="-2" pref="632" max="-2" attributes="0"/>
-                                      <Group type="102" attributes="0">
-                                          <Component id="JPanel2" min="-2" pref="384" max="-2" attributes="0"/>
-                                          <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
-                                          <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
-                                      </Group>
-                                  </Group>
+                          <EmptySpace min="-2" pref="220" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="startSimulation" max="32767" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <Component id="JPanel2" min="-2" pref="384" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="90" max="-2" attributes="0"/>
+                                  <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
-                          <EmptySpace pref="22" max="32767" attributes="0"/>
+                          <EmptySpace pref="220" max="32767" attributes="0"/>
                       </Group>
+                      <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -114,8 +107,8 @@
                               <Component id="JPanel2" min="-2" pref="262" max="-2" attributes="0"/>
                               <Component id="jPanel11" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="-2" pref="44" max="-2" attributes="0"/>
-                          <Component id="startSimulation" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="27" max="-2" attributes="0"/>
+                          <Component id="startSimulation" min="-2" pref="40" max="-2" attributes="0"/>
                           <EmptySpace pref="86" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -155,7 +148,7 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="18" style="0"/>
+                              <Font name="Arial Black" size="14" style="0"/>
                             </Property>
                             <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" value="Basic CSP"/>
@@ -165,7 +158,6 @@
                             </Property>
                             <Property name="hideActionText" type="boolean" value="true"/>
                             <Property name="horizontalTextPosition" type="int" value="4"/>
-                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="basicCspActionPerformed"/>
@@ -177,10 +169,9 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="18" style="0"/>
+                              <Font name="Arial Black" size="14" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Forward checking"/>
-                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JRadioButton" name="arcConsistencyWithFC">
@@ -189,14 +180,13 @@
                               <ComponentRef name="buttonGroup1"/>
                             </Property>
                             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                              <Font name="Calibri" size="18" style="0"/>
+                              <Font name="Arial Black" size="14" style="0"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="Arc consistency with forward checking"/>
                             <Property name="alignmentX" type="float" value="1.0"/>
                             <Property name="alignmentY" type="float" value="1.0"/>
                             <Property name="autoscrolls" type="boolean" value="true"/>
                             <Property name="horizontalAlignment" type="int" value="0"/>
-                            <Property name="verticalTextPosition" type="int" value="1"/>
                           </Properties>
                           <Events>
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="arcConsistencyWithFCActionPerformed"/>
@@ -209,7 +199,7 @@
                 <Component class="javax.swing.JLabel" name="jLabel1">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Calibri" size="36" style="1"/>
+                      <Font name="Arial Black" size="36" style="1"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                     <Property name="text" type="java.lang.String" value="CSP MEETING PLANNER"/>
@@ -218,7 +208,7 @@
                 <Component class="javax.swing.JButton" name="startSimulation">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                      <Font name="Calibri" size="18" style="1"/>
+                      <Font name="Arial Black" size="18" style="1"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Start simulation"/>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -235,7 +225,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace pref="19" max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                  <Component id="chooseMeetings" pref="132" max="32767" attributes="0"/>
+                                  <Component id="chooseMeetings" max="32767" attributes="0"/>
                                   <Component id="chooseTeams" max="32767" attributes="0"/>
                                   <Component id="chooseRequests" alignment="1" max="32767" attributes="0"/>
                               </Group>
@@ -260,6 +250,9 @@
                   <SubComponents>
                     <Component class="javax.swing.JButton" name="chooseMeetings">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Arial Black" size="12" style="1"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Choose meetings"/>
                       </Properties>
                       <Events>
@@ -268,6 +261,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="chooseTeams">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Arial Black" size="12" style="1"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Choose teams"/>
                       </Properties>
                       <Events>
@@ -279,6 +275,9 @@
                     </Component>
                     <Component class="javax.swing.JButton" name="chooseRequests">
                       <Properties>
+                        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                          <Font name="Arial Black" size="12" style="1"/>
+                        </Property>
                         <Property name="text" type="java.lang.String" value="Choose requests"/>
                       </Properties>
                       <Events>
@@ -336,7 +335,7 @@
                     <Component class="javax.swing.JLabel" name="teamAName">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Calibri" size="14" style="1"/>
+                          <Font name="Arial Black" size="14" style="1"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
@@ -407,7 +406,7 @@
                     <Component class="javax.swing.JLabel" name="teamBName">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Calibri" size="14" style="1"/>
+                          <Font name="Arial Black" size="14" style="1"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                       </Properties>
@@ -440,7 +439,6 @@
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                               <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    WORK_TIMES_IN_DAY,&#xa;    TABE_HEADER&#xa;)" type="code"/>
                             </Property>
-                            <Property name="rowHeight" type="int" value="20"/>
                           </Properties>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="teamCTable.setShowGrid(true);"/>
@@ -451,7 +449,7 @@
                     <Component class="javax.swing.JLabel" name="teamCName">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Calibri" size="14" style="1"/>
+                          <Font name="Arial Black" size="14" style="1"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                       </Properties>
@@ -484,7 +482,6 @@
                             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                               <Connection code="new javax.swing.table.DefaultTableModel(&#xa;    WORK_TIMES_IN_DAY,&#xa;    TABE_HEADER&#xa;)" type="code"/>
                             </Property>
-                            <Property name="rowHeight" type="int" value="20"/>
                           </Properties>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="teamDTable.setShowGrid(true);"/>
@@ -495,7 +492,7 @@
                     <Component class="javax.swing.JLabel" name="teamDName">
                       <Properties>
                         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-                          <Font name="Calibri" size="14" style="1"/>
+                          <Font name="Arial Black" size="14" style="1"/>
                         </Property>
                         <Property name="horizontalAlignment" type="int" value="0"/>
                       </Properties>
@@ -523,6 +520,9 @@
               <SubComponents>
                 <Component class="javax.swing.JButton" name="nextStep">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Arial Black" size="14" style="1"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Next step"/>
                   </Properties>
                   <Events>
@@ -531,6 +531,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="goToStartPage">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Arial Black" size="14" style="1"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Go to start page"/>
                   </Properties>
                   <Events>
@@ -539,6 +542,9 @@
                 </Component>
                 <Component class="javax.swing.JButton" name="runToEnd">
                   <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Arial Black" size="14" style="1"/>
+                    </Property>
                     <Property name="text" type="java.lang.String" value="Run to end"/>
                   </Properties>
                   <Events>

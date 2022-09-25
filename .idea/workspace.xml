@@ -5,26 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6756b73c-f06c-4bd0-b3bb-60166f6fa7f2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Planner-CSP.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_formdev_flatlaf_2_4.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_googlecode_json_simple_json_simple_1_1_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_10.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_commons_commons_lang3_3_12_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_javatuples_javatuples_1_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__unknown_binary_AbsoluteLayout_SNAPSHOT.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/backtaracking_with_version_one/meetings.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/backtaracking_with_version_one/requests.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/backtaracking_with_version_one/teams.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/img/icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/CSPAlgorithm.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/CSPAlgorithm.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/PlannerCSP.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/PlannerCSP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/Gui.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/Gui.form" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/Gui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/Gui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/GuiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/GuiController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/TeamData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/gui/TeamData.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,5 +80,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/rs/ac/bg/etf/CSPAlgorithm.java</url>
+          <line>472</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -334,7 +334,7 @@ public class CSPAlgorithm {
                     semaphore.acquire();
                 }
 
-                if (!arcConsistency(newDomains, teamConstraint, teamAndMeeting, infoAboutMeetings, solution)) {
+                if (!check_arc(teamConstraint, teamAndMeeting, solution, newDomains, infoAboutMeetings)) {
                     solution.put(teamAndMeeting, new Pair<>(null, new ArrayList<>()));
                     domain.get(timeAndDay.getValue0()).remove(timeAndDay.getValue1().get(0));
                     if (!runToEnd) {
@@ -477,16 +477,87 @@ public class CSPAlgorithm {
             Pair<String, String> varA = varAB.getValue0();
             Pair<String, String> varB = varAB.getValue1();
 
-            List<TimeInterval> varAValueToDelete = new ArrayList<>();
+            List<Pair<DayOfWeek, List<TimeInterval>>> varAValueToDelete = new ArrayList<>();
 
-            List<Pair<DayOfWeek, List<TimeInterval>>> varADomain = getAllPossibleTermins(domains.get(varA), getDurationMeeting(varA.getValue1(), infoAboutMeetings) / FileParser.INTERVAL );
-            for(Pair<DayOfWeek, List<TimeInterval>> varAOneInterval: varADomain){
-                boolean varBNoValue = false;
+            List<Pair<DayOfWeek, List<TimeInterval>>> varADomain = getAllPossibleTermins(domains.get(varA), getDurationMeeting(varA.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+            for (Pair<DayOfWeek, List<TimeInterval>> valA : varADomain) {
+                boolean varBNoValue = true;
+                List<Pair<DayOfWeek, List<TimeInterval>>> varBDomain = getAllPossibleTermins(domains.get(varB), getDurationMeeting(varB.getValue1(), infoAboutMeetings) / FileParser.INTERVAL);
+                for (Pair<DayOfWeek, List<TimeInterval>> valB : varBDomain) {
+                    if (satisfyConstraint(valA, valB)) {
+                        varBNoValue = false;
+                        break;
+                    }
+                }
+                if (varBNoValue) {
+                    varAValueToDelete.add(valA);
+                }
             }
-
-
+            if (!varAValueToDelete.isEmpty()) {
+                varADomain.removeAll(varAValueToDelete);
+                removeFromDomain(domains, varA, varADomain);
+                if (isDomainEmpty(domains, varA)) {
+                    return false;
+                }
+                arcs.addAll(getArcsToVar(varA, teamConstraints, solution));
+            }
         }
-        return false;
+        return true;
+    }
+
+    private List<Pair<Pair<String, String>, Pair<String, String>>> getArcsToVar(Pair<String, String> varA, Map<String, Set<String>> teamConstraints, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
+        List<String> constrainedTeams = teamConstraints.get(varA.getValue0()).stream().filter(elem -> !elem.equals(varA.getValue0())).collect(Collectors.toList());
+        List<Pair<Pair<String, String>, Pair<String, String>>> arcs = new ArrayList<>();
+        for (String team : constrainedTeams) {
+            for (String meeting: fp.getMeetings()){
+                Pair<String, String> constrainedVar = new Pair<>(team, meeting);
+
+                if (!solution.get(constrainedVar).getValue1().isEmpty() || varA.equals(constrainedVar)) {
+                    continue;
+                }
+
+                if (!solution.get(varA).getValue1().isEmpty()) {
+                    continue;
+                }
+
+                Pair<String, String> newPair = new Pair<>(team, varA.getValue0());
+                arcs.add(new Pair<>(newPair, varA));
+            }
+        }
+        return arcs;
+    }
+
+    private boolean isDomainEmpty(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains, Pair<String, String> varA) {
+        Map<DayOfWeek, List<TimeInterval>> domain = domains.get(varA);
+        return domain.entrySet().stream().allMatch(dayToTimes -> dayToTimes.getValue().isEmpty());
+    }
+
+    private void removeFromDomain(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains, Pair<String, String> varA, List<Pair<DayOfWeek, List<TimeInterval>>> leftInDomain) {
+        Map<DayOfWeek, List<TimeInterval>> domain = domains.get(varA);
+        for (Pair<DayOfWeek, List<TimeInterval>> valToKeep : leftInDomain) {
+            DayOfWeek dayOfWeek = valToKeep.getValue0();
+            List<TimeInterval> leftValues = valToKeep.getValue1();
+            domain.get(dayOfWeek).removeIf(elem -> !leftValues.contains(elem));
+        }
+    }
+
+    private boolean satisfyConstraint(
+            Pair<DayOfWeek, List<TimeInterval>> valA,
+            Pair<DayOfWeek, List<TimeInterval>> valB
+    ) {
+
+        boolean isSatisfy = true;
+        DayOfWeek valADay = valA.getValue0();
+        DayOfWeek valBDay = valB.getValue0();
+        if (valADay.equals(valBDay)) {
+            Set<TimeInterval> valATimes = new HashSet<>(valA.getValue1());
+            Set<TimeInterval> valBTimes = new HashSet<>(valB.getValue1());
+            valATimes.retainAll(valBTimes);
+            isSatisfy = valATimes.isEmpty();
+        }
+
+        return isSatisfy;
+
     }
 
     private List<Pair<DayOfWeek, List<TimeInterval>>> getAllPossibleTermins(
@@ -497,7 +568,7 @@ public class CSPAlgorithm {
         Map<DayOfWeek, List<TimeInterval>> copyDomain = deepCopyForMap(domain);
         while (!copyDomain.isEmpty()) {
             Pair<DayOfWeek, List<TimeInterval>> interval = getContinuousIntervals(copyDomain, numberOfIntervals);
-            if (interval == null){
+            if (interval == null) {
                 break;
             }
             copyDomain.get(interval.getValue0()).remove(interval.getValue1().get(0));

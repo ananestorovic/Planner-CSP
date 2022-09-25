@@ -57,7 +57,7 @@ public class TeamData {
     }
     
     public String getConstraintAsStrings(){
-        StringJoiner stringJoiner = new StringJoiner(",", "[", "]");
+        StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
         constraints.forEach(stringJoiner::add);
         return stringJoiner.toString();
     }

@@ -112,14 +112,13 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel4.setLayout(new java.awt.GridLayout(0, 1));
 
         buttonGroup1.add(basicCsp);
-        basicCsp.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
+        basicCsp.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         basicCsp.setSelected(true);
         basicCsp.setText("Basic CSP");
         basicCsp.setAlignmentY(0.0F);
         basicCsp.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         basicCsp.setHideActionText(true);
         basicCsp.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        basicCsp.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         basicCsp.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 basicCspActionPerformed(evt);
@@ -128,19 +127,17 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel4.add(basicCsp);
 
         buttonGroup1.add(forwardChecking);
-        forwardChecking.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
+        forwardChecking.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         forwardChecking.setText("Forward checking");
-        forwardChecking.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         jPanel4.add(forwardChecking);
 
         buttonGroup1.add(arcConsistencyWithFC);
-        arcConsistencyWithFC.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
+        arcConsistencyWithFC.setFont(new java.awt.Font("Arial Black", 0, 14)); // NOI18N
         arcConsistencyWithFC.setText("Arc consistency with forward checking");
         arcConsistencyWithFC.setAlignmentX(1.0F);
         arcConsistencyWithFC.setAlignmentY(1.0F);
         arcConsistencyWithFC.setAutoscrolls(true);
         arcConsistencyWithFC.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        arcConsistencyWithFC.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         arcConsistencyWithFC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 arcConsistencyWithFCActionPerformed(evt);
@@ -150,11 +147,11 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
         JPanel2.add(jPanel4, java.awt.BorderLayout.LINE_START);
 
-        jLabel1.setFont(new java.awt.Font("Calibri", 1, 36)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial Black", 1, 36)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("CSP MEETING PLANNER");
 
-        startSimulation.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
+        startSimulation.setFont(new java.awt.Font("Arial Black", 1, 18)); // NOI18N
         startSimulation.setText("Start simulation");
         startSimulation.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         startSimulation.addActionListener(new java.awt.event.ActionListener() {
@@ -163,6 +160,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             }
         });
 
+        chooseMeetings.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
         chooseMeetings.setText("Choose meetings");
         chooseMeetings.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -170,6 +168,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             }
         });
 
+        chooseTeams.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
         chooseTeams.setText("Choose teams");
         chooseTeams.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -177,6 +176,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             }
         });
 
+        chooseRequests.setFont(new java.awt.Font("Arial Black", 1, 12)); // NOI18N
         chooseRequests.setText("Choose requests");
         chooseRequests.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -191,7 +191,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
                 .addContainerGap(19, Short.MAX_VALUE)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(chooseMeetings, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                    .addComponent(chooseMeetings, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(chooseTeams, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(chooseRequests, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(17, 17, 17))
@@ -213,19 +213,15 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         jPanel9Layout.setHorizontalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(220, 220, 220)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(startSimulation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1068, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGap(233, 233, 233)
-                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(startSimulation, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel9Layout.createSequentialGroup()
-                                .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(90, 90, 90)
-                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(22, Short.MAX_VALUE))
+                        .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(90, 90, 90)
+                        .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(220, Short.MAX_VALUE))
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -236,12 +232,12 @@ public class Gui extends javax.swing.JFrame implements GuiController {
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(44, 44, 44)
-                .addComponent(startSimulation)
+                .addGap(27, 27, 27)
+                .addComponent(startSimulation, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(86, Short.MAX_VALUE))
         );
 
-        jPanel1.add(jPanel9, java.awt.BorderLayout.CENTER);
+        jPanel1.add(jPanel9, java.awt.BorderLayout.PAGE_START);
 
         mainPanel.add(jPanel1, "card3");
 
@@ -254,7 +250,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        teamAName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamAName.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         teamAName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         teamAName.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jPanel2.add(teamAName, java.awt.BorderLayout.PAGE_START);
@@ -281,7 +277,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
         jPanel5.add(jScrollPane3, java.awt.BorderLayout.CENTER);
 
-        teamBName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamBName.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         teamBName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel5.add(teamBName, java.awt.BorderLayout.PAGE_START);
 
@@ -293,13 +289,12 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             WORK_TIMES_IN_DAY,
             TABE_HEADER
         ));
-        teamCTable.setRowHeight(20);
         teamCTable.setShowGrid(true);
         jScrollPane2.setViewportView(teamCTable);
 
         jPanel6.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
-        teamCName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamCName.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         teamCName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel6.add(teamCName, java.awt.BorderLayout.PAGE_START);
 
@@ -311,13 +306,12 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             WORK_TIMES_IN_DAY,
             TABE_HEADER
         ));
-        teamDTable.setRowHeight(20);
         teamDTable.setShowGrid(true);
         jScrollPane4.setViewportView(teamDTable);
 
         jPanel10.add(jScrollPane4, java.awt.BorderLayout.CENTER);
 
-        teamDName.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
+        teamDName.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         teamDName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jPanel10.add(teamDName, java.awt.BorderLayout.PAGE_START);
 
@@ -328,6 +322,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
 
         jPanel3.setLayout(new java.awt.GridLayout(1, 0));
 
+        nextStep.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         nextStep.setText("Next step");
         nextStep.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -336,6 +331,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         });
         jPanel3.add(nextStep);
 
+        goToStartPage.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         goToStartPage.setText("Go to start page");
         goToStartPage.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -344,6 +340,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
         });
         jPanel3.add(goToStartPage);
 
+        runToEnd.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         runToEnd.setText("Run to end");
         runToEnd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
