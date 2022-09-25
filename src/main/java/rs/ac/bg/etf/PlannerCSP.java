@@ -44,11 +44,10 @@ public class PlannerCSP implements GuiListener, Runnable {
         fp.generateTeamConstraint(); // just once i need to generate this
 
         fp.generateAvailable(); //initial table, later we will update this
-        Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> a = fp.getAvailable();
 
         Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution = fp.generateEmptySolution();
 
-        guiController.initTeamTables(fp.getTeams(), fp.getallVarsTermin(), solution);
+        guiController.initTeamTables(fp.getTeams(), fp.getallVarsTermin(), solution, fp.getTeamConstraint());
         semaphore.acquire();
         if (!runToEnd) {
             guiController.refreshGui(fp.getAvailable(), solution);

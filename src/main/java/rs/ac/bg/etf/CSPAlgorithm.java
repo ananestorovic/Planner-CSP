@@ -365,10 +365,11 @@ public class CSPAlgorithm {
 
     }
 
-    private boolean arcConsistency(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains,
-                                   Map<String, Set<String>> teamConstraints, Pair<String, String> teamAndMeeting,
-                                   List<Pair<String, Integer>> infoAboutMeetings,
-                                   Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
+    private boolean arcConsistency(
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains,
+            Map<String, Set<String>> teamConstraints, Pair<String, String> teamAndMeeting,
+            List<Pair<String, Integer>> infoAboutMeetings,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
 
         Set<String> listOfTeams = teamConstraints.get(teamAndMeeting.getValue0());
 
@@ -430,5 +431,80 @@ public class CSPAlgorithm {
     void setRunToEnd(boolean runToEndNewVal) {
         runToEnd = runToEndNewVal;
     }
+
+
+    private List<Pair<Pair<String, String>, Pair<String, String>>> getAllArcs(
+            Map<String, Set<String>> teamConstraints, Pair<String, String> teamAndMeeting,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution
+    ) {
+
+        List<Pair<Pair<String, String>, Pair<String, String>>> arcs = new ArrayList<>();
+
+        for (String team : fp.getTeams()) {
+            Set<String> listOfTeams = teamConstraints.get(team);
+            for (String constrainedTeam : listOfTeams) {
+                for (String meeting : fp.getMeetings()) {
+                    Pair<String, String> currentTeamAndMeeting = new Pair<>(team, meeting);
+                    Pair<String, String> constrainedTeamAndMeeting = new Pair<>(constrainedTeam, meeting);
+
+                    if (!solution.get(constrainedTeamAndMeeting).getValue1().isEmpty() || teamAndMeeting.equals(constrainedTeamAndMeeting)) {
+                        continue;
+                    }
+
+                    if (!solution.get(currentTeamAndMeeting).getValue1().isEmpty() || teamAndMeeting.equals(currentTeamAndMeeting)) {
+                        continue;
+                    }
+
+                    arcs.add(
+                            new Pair<>(currentTeamAndMeeting, constrainedTeamAndMeeting)
+                    );
+                }
+            }
+        }
+        return arcs;
+    }
+
+    private boolean check_arc(
+            Map<String, Set<String>> teamConstraints, Pair<String, String> teamAndMeeting,
+            Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution,
+            Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> domains,
+            List<Pair<String, Integer>> infoAboutMeetings
+    ) {
+        List<Pair<Pair<String, String>, Pair<String, String>>> arcs = getAllArcs(teamConstraints, teamAndMeeting, solution);
+
+        while (!arcs.isEmpty()) {
+            Pair<Pair<String, String>, Pair<String, String>> varAB = arcs.remove(0);
+            Pair<String, String> varA = varAB.getValue0();
+            Pair<String, String> varB = varAB.getValue1();
+
+            List<TimeInterval> varAValueToDelete = new ArrayList<>();
+
+            List<Pair<DayOfWeek, List<TimeInterval>>> varADomain = getAllPossibleTermins(domains.get(varA), getDurationMeeting(varA.getValue1(), infoAboutMeetings) / FileParser.INTERVAL );
+            for(Pair<DayOfWeek, List<TimeInterval>> varAOneInterval: varADomain){
+                boolean varBNoValue = false;
+            }
+
+
+        }
+        return false;
+    }
+
+    private List<Pair<DayOfWeek, List<TimeInterval>>> getAllPossibleTermins(
+            Map<DayOfWeek, List<TimeInterval>> domain,
+            int numberOfIntervals
+    ) {
+        List<Pair<DayOfWeek, List<TimeInterval>>> values = new ArrayList<>();
+        Map<DayOfWeek, List<TimeInterval>> copyDomain = deepCopyForMap(domain);
+        while (!copyDomain.isEmpty()) {
+            Pair<DayOfWeek, List<TimeInterval>> interval = getContinuousIntervals(copyDomain, numberOfIntervals);
+            if (interval == null){
+                break;
+            }
+            copyDomain.get(interval.getValue0()).remove(interval.getValue1().get(0));
+            values.add(interval);
+        }
+        return values;
+    }
+
 
 }

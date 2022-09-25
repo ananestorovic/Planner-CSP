@@ -9,9 +9,8 @@ import enums.CspAlgorithmType;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Point;
 import java.io.File;
-import java.time.LocalDate;
+import java.net.URL;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,20 +19,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.stream.Collectors;
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.plaf.synth.Region;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
+
 import org.javatuples.Pair;
-import org.javatuples.Quartet;
 import rs.ac.bg.etf.DayOfWeek;
 import rs.ac.bg.etf.PlannerCSP;
 import rs.ac.bg.etf.TimeInterval;
@@ -48,6 +39,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
      * Creates new form Gui
      */
     public Gui() {
+        setIcon();
         initComponents();
         setVisible(true);
     }
@@ -223,30 +215,30 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGap(282, 282, 282)
+                        .addGap(25, 25, 25)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1068, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(233, 233, 233)
                         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(startSimulation, javax.swing.GroupLayout.PREFERRED_SIZE, 632, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(jPanel9Layout.createSequentialGroup()
                                 .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(80, 80, 80)
-                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1068, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(86, Short.MAX_VALUE))
+                                .addGap(90, 90, 90)
+                                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(27, 27, 27)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(JPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGap(44, 44, 44)
                 .addComponent(startSimulation)
-                .addContainerGap(133, Short.MAX_VALUE))
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         jPanel1.add(jPanel9, java.awt.BorderLayout.CENTER);
@@ -301,6 +293,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             WORK_TIMES_IN_DAY,
             TABE_HEADER
         ));
+        teamCTable.setRowHeight(20);
         teamCTable.setShowGrid(true);
         jScrollPane2.setViewportView(teamCTable);
 
@@ -318,6 +311,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             WORK_TIMES_IN_DAY,
             TABE_HEADER
         ));
+        teamDTable.setRowHeight(20);
         teamDTable.setShowGrid(true);
         jScrollPane4.setViewportView(teamDTable);
 
@@ -375,8 +369,7 @@ public class Gui extends javax.swing.JFrame implements GuiController {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -475,10 +468,11 @@ public class Gui extends javax.swing.JFrame implements GuiController {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+       ;
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             javax.swing.UIManager.setLookAndFeel(new FlatDarkLaf());
@@ -494,6 +488,15 @@ public class Gui extends javax.swing.JFrame implements GuiController {
                 guiController.setListener(new PlannerCSP(guiController));
             }
         });
+    }
+
+    private void setIcon(){
+        URL iconURL = getClass().getResource("/img/icon.png");
+        // iconURL is null when not found
+        if (iconURL != null) {
+            ImageIcon icon = new ImageIcon(iconURL);
+            setIconImage(icon.getImage());
+        }
     }
 
     private Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> makeTerminsList(String teamName, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> listWithQuartets) {
@@ -520,23 +523,27 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     }
 
     @Override
-    public void initTeamTables(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
-        teamsData = getTeamDataList(teamNames, freeSloots);
+    public void initTeamTables(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSlots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution, Map<String, Set<String>> teamConstraint) {
+        teamsData = getTeamDataList(teamNames, freeSlots, teamConstraint);
         JTable[] teamTables = new JTable[]{teamATable, teamBTable, teamCTable, teamDTable};
         JLabel[] teamNamesLabel = new JLabel[]{teamAName, teamBName, teamCName, teamDName};
         for (int i = 0; i < teamsData.size(); i++) {
-            teamNamesLabel[i].setText(teamsData.get(i).getTeamName());
-            setTableData(teamTables[i], teamsData.get(i));
+            TeamData teamData = teamsData.get(i);
+            teamNamesLabel[i].setText(teamData.getTeamName() + ": " + teamData.getConstraintAsStrings() );
+            setTableData(teamTables[i], teamData);
             teamTables[i].repaint();
         }
     }
 
-    private List<TeamData> getTeamDataList(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots) {
+    private List<TeamData> getTeamDataList(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<String, Set<String>> teamConstraint) {
         List<TeamData> tempTeamList = new ArrayList<>();
         for (String teamName : teamNames) {
             TeamData teamData = new TeamData();
             teamData.setTeamName(teamName);
             teamData.setFreeList(makeTerminsList(teamName, freeSloots));
+            teamData.setConstraints(
+            teamConstraint.get(teamName).stream().filter(oneConstraint->!oneConstraint.equals(teamName)).collect(Collectors.toList())
+            );
             teamData.setMeetings(new HashMap<>());
             tempTeamList.add(teamData);
         }
@@ -544,12 +551,12 @@ public class Gui extends javax.swing.JFrame implements GuiController {
     }
 
     @Override
-    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
+    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSlots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution) {
         JTable[] teamTables = new JTable[]{teamATable, teamBTable, teamCTable, teamDTable};
         Map<String, Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>>> meetings = makeMeetings(solution);
         for (int i = 0; i < teamsData.size(); i++) {
             TeamData teamData = teamsData.get(i);
-            teamData.setFreeList(makeTerminsList(teamData.getTeamName(), freeSloots));
+            teamData.setFreeList(makeTerminsList(teamData.getTeamName(), freeSlots));
             teamData.setMeetings(meetings.get(teamData.getTeamName()));
             teamTables[i].repaint();
         }

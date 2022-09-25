@@ -6,10 +6,13 @@ package rs.ac.bg.etf.gui;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collector;
 import org.javatuples.Pair;
 import org.javatuples.Quartet;
 import rs.ac.bg.etf.DayOfWeek;
@@ -23,6 +26,7 @@ public class TeamData {
     private String teamName;
     private Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> freeList;
     private Map<DayOfWeek, Map<String, Set<Pair<LocalTime, LocalTime>>>> meetings;
+    private List<String> constraints;
 
     public void setFreeList(Map<DayOfWeek, Set<Pair<LocalTime, LocalTime>>> freeList) {
         this.freeList = freeList;
@@ -46,6 +50,16 @@ public class TeamData {
 
     public String getTeamName() {
         return teamName;
+    }
+
+    void setConstraints(List<String> constraints) {
+               this.constraints = constraints;
+    }
+    
+    public String getConstraintAsStrings(){
+        StringJoiner stringJoiner = new StringJoiner(",", "[", "]");
+        constraints.forEach(stringJoiner::add);
+        return stringJoiner.toString();
     }
 
 }

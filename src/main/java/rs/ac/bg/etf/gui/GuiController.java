@@ -6,6 +6,8 @@ package rs.ac.bg.etf.gui;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.javatuples.Pair;
 import rs.ac.bg.etf.DayOfWeek;
 import rs.ac.bg.etf.TimeInterval;
@@ -16,9 +18,11 @@ import rs.ac.bg.etf.TimeInterval;
  */
 public interface GuiController {
 
-    public void initTeamTables(List<String> teamNames, Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution);
+    public void initTeamTables(List<String> teamNames,
+                               Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSlots,
+                               Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution, Map<String, Set<String>> teamConstraint);
 
-    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSloots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution);
+    public void refreshGui(Map<Pair<String, String>, Map<DayOfWeek, List<TimeInterval>>> freeSlots, Map<Pair<String, String>, Pair<DayOfWeek, List<TimeInterval>>> solution);
 
     public void setListener(GuiListener guiListener);
 
