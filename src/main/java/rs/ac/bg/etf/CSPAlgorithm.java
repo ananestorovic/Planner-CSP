@@ -520,7 +520,7 @@ public class CSPAlgorithm {
                     continue;
                 }
 
-                Pair<String, String> newPair = new Pair<>(team, varA.getValue0());
+                Pair<String, String> newPair = new Pair<>(team, meeting);
                 arcs.add(new Pair<>(newPair, varA));
             }
         }
